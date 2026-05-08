@@ -272,7 +272,7 @@
   /* Payments — Amber */
   .admin-tab-btn:nth-child(3) { background:#E65100; border-color:#E65100; color:white; }
   .admin-tab-btn:nth-child(3).active { background:#FFF3E0; border-color:#E65100; border-bottom-color:#FFF3E0; color:#BF360C; }
-  #payments-tab { background:#FFF3E0; border-color:#E65100; }
+  #receipts-tab { background:#FFF3E0; border-color:#E65100; }
   .p2-split-view { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%; }
   .p2-split-left { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
   .p2-split-right { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; padding:14px; overflow-y:auto; }
@@ -382,7 +382,7 @@
   <div class="admin-tab-nav">
     <button class="admin-tab-btn active" onclick="switchAdminTab('bookings')">📋 Bookings</button>
     <button class="admin-tab-btn" onclick="switchAdminTab('invoices')">📄 Invoices</button>
-    <button class="admin-tab-btn" onclick="switchAdminTab('payments')">💳 Payments</button>
+    <button class="admin-tab-btn" onclick="switchAdminTab('receipts')">🧾 Receipts</button>
   </div>
   
   <!-- BOOKINGS TAB (PHASE 1) -->
@@ -461,8 +461,41 @@
   </div>
   </div>
   <!-- INVOICES TAB -->
-  <div id="invoices-tab" class="admin-tab-content">
-    <div class="p2-split-view" style="padding:12px">
+  <div id="invoices-tab" class="admin-tab-content" style="flex-direction:column">
+    <div style="padding:12px 12px 0">
+      <h1 class="admin-title" style="margin-bottom:10px">Invoices</h1>
+      <div class="admin-stats-box" style="background:#0F1B0F;border:1px solid #1E2D1E;border-radius:10px;overflow:hidden;margin-bottom:12px">
+        <button onclick="toggleInvStats()" style="width:100%;background:0;border:0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left;font-family:inherit">
+          <span style="font-size:14px;font-weight:700;color:#E2E8F0">📊 Dashboard</span>
+          <span id="inv-stats-toggle" style="font-size:16px;color:#A5D6A7">▼</span>
+        </button>
+        <div id="inv-stats-content" style="display:block;padding:14px;border-top:1px solid #1A2B1A">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div>
+              <div class="admin-stat-item" style="margin-bottom:10px">
+                <span class="admin-stat-label">Total Invoices</span>
+                <span class="admin-stat-value" id="inv-stat-total">0</span>
+              </div>
+              <div class="admin-stat-item">
+                <span class="admin-stat-label">Awaiting Payment</span>
+                <span class="admin-stat-value" id="inv-stat-sent">0</span>
+              </div>
+            </div>
+            <div>
+              <div class="admin-stat-item" style="margin-bottom:10px">
+                <span class="admin-stat-label">Total Invoiced</span>
+                <span class="admin-stat-value revenue" id="inv-stat-amount">$0</span>
+              </div>
+              <div class="admin-stat-item">
+                <span class="admin-stat-label">Paid</span>
+                <span class="admin-stat-value" id="inv-stat-paid">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="p2-split-view" style="padding:0 12px 12px">
       <div class="p2-split-left">
         <div class="p2-header">
           <div class="p2-header-title">Invoices</div>
@@ -475,17 +508,50 @@
     </div>
   </div>
   
-  <!-- PAYMENTS & RECEIPTS TAB -->
-  <div id="payments-tab" class="admin-tab-content">
-    <div class="p2-split-view" style="padding:12px">
+  <!-- RECEIPTS TAB -->
+  <div id="receipts-tab" class="admin-tab-content" style="flex-direction:column">
+    <div style="padding:12px 12px 0">
+      <h1 class="admin-title" style="margin-bottom:10px">Receipts</h1>
+      <div class="admin-stats-box" style="background:#0F1B0F;border:1px solid #1E2D1E;border-radius:10px;overflow:hidden;margin-bottom:12px">
+        <button onclick="toggleRecStats()" style="width:100%;background:0;border:0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left;font-family:inherit">
+          <span style="font-size:14px;font-weight:700;color:#E2E8F0">📊 Dashboard</span>
+          <span id="rec-stats-toggle" style="font-size:16px;color:#A5D6A7">▼</span>
+        </button>
+        <div id="rec-stats-content" style="display:block;padding:14px;border-top:1px solid #1A2B1A">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px">
+            <div>
+              <div class="admin-stat-item" style="margin-bottom:10px">
+                <span class="admin-stat-label">Total Receipts</span>
+                <span class="admin-stat-value" id="rec-stat-total">0</span>
+              </div>
+              <div class="admin-stat-item">
+                <span class="admin-stat-label">Cash</span>
+                <span class="admin-stat-value" id="rec-stat-cash">0</span>
+              </div>
+            </div>
+            <div>
+              <div class="admin-stat-item" style="margin-bottom:10px">
+                <span class="admin-stat-label">Total Collected</span>
+                <span class="admin-stat-value revenue" id="rec-stat-total-amt">$0</span>
+              </div>
+              <div class="admin-stat-item">
+                <span class="admin-stat-label">Card / Venmo</span>
+                <span class="admin-stat-value" id="rec-stat-card">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="p2-split-view" style="padding:0 12px 12px">
       <div class="p2-split-left">
         <div class="p2-header">
-          <div class="p2-header-title">Payments</div>
+          <div class="p2-header-title">Receipts</div>
         </div>
-        <div class="p2-list" id="p2-payments-list"></div>
+        <div class="p2-list" id="p2-receipts-list"></div>
       </div>
       <div class="p2-split-right" id="p2-receipt-detail">
-        <div style="text-align:center;color:#8AAA8A;padding:20px">Select a payment to view receipt</div>
+        <div style="text-align:center;color:#8AAA8A;padding:20px">Select a receipt to view</div>
       </div>
     </div>
   </div>
@@ -828,8 +894,8 @@ function switchAdminTab(tabName) {
   
   if (tab) {
     tab.classList.add('active');
-    if (tab.id === 'invoices-tab') p2RenderInvoices();
-    if (tab.id === 'payments-tab') p2RenderPayments();
+    if (tab.id === 'invoices-tab') { p2RenderInvoices(); p2RenderInvoiceDashboard(); }
+    if (tab.id === 'receipts-tab') { p2RenderReceipts(); p2RenderReceiptsDashboard(); }
   }
   if (btn) btn.classList.add('active');
 }
@@ -1133,8 +1199,8 @@ function p2MarkPaid(invoiceId) {
   p2OpenPaymentMethodModal(invoiceId);
 }
 
-function p2RenderPayments() {
-  const paymentsList = document.getElementById('p2-payments-list');
+function p2RenderReceipts() {
+  const paymentsList = document.getElementById('p2-receipts-list');
   const receiptDetail = document.getElementById('p2-receipt-detail');
   
   if (p2Payments.length === 0) {
@@ -1205,7 +1271,7 @@ function p2ShowReceipt(paymentId) {
     </div>
   `;
   
-  p2RenderPayments();
+  p2RenderReceipts();
 }
 
 function p2RenderCalendar() {
@@ -1243,6 +1309,46 @@ function p2RenderCalendar() {
   }
   
   calDiv.innerHTML = html;
+}
+
+function p2RenderInvoiceDashboard() {
+  const total = p2Invoices.length;
+  const sent = p2Invoices.filter(i => i.status === 'sent').length;
+  const paid = p2Invoices.filter(i => i.status === 'paid').length;
+  const amount = p2Invoices.reduce((sum, i) => sum + (i.amount || 0), 0);
+  const el = id => document.getElementById(id);
+  if (el('inv-stat-total')) el('inv-stat-total').textContent = total;
+  if (el('inv-stat-sent')) el('inv-stat-sent').textContent = sent;
+  if (el('inv-stat-paid')) el('inv-stat-paid').textContent = paid;
+  if (el('inv-stat-amount')) el('inv-stat-amount').textContent = '$' + amount.toFixed(2);
+}
+
+function p2RenderReceiptsDashboard() {
+  const total = p2Receipts.length;
+  const totalAmt = p2Payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+  const byCash = p2Payments.filter(p => p.method === 'Cash').length;
+  const byCard = p2Payments.filter(p => p.method !== 'Cash').length;
+  const el = id => document.getElementById(id);
+  if (el('rec-stat-total')) el('rec-stat-total').textContent = total;
+  if (el('rec-stat-total-amt')) el('rec-stat-total-amt').textContent = '$' + totalAmt.toFixed(2);
+  if (el('rec-stat-cash')) el('rec-stat-cash').textContent = byCash;
+  if (el('rec-stat-card')) el('rec-stat-card').textContent = byCard;
+}
+
+function toggleInvStats() {
+  const c = document.getElementById('inv-stats-content');
+  const t = document.getElementById('inv-stats-toggle');
+  const visible = c.style.display !== 'none';
+  c.style.display = visible ? 'none' : 'block';
+  t.textContent = visible ? '▶' : '▼';
+}
+
+function toggleRecStats() {
+  const c = document.getElementById('rec-stats-content');
+  const t = document.getElementById('rec-stats-toggle');
+  const visible = c.style.display !== 'none';
+  c.style.display = visible ? 'none' : 'block';
+  t.textContent = visible ? '▶' : '▼';
 }
 
 function p2LoadFromStorage() {
