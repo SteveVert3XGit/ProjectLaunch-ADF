@@ -259,6 +259,9 @@
 
   /* ===== PHASE 2: TAB STYLES ===== */
   .admin-tab-nav { background:#0D1117; padding:12px; border-bottom:1px solid #1E2D1E; display:flex; gap:8px; overflow-x:auto; }
+  @media(min-width:768px){
+    .admin-tab-nav { position:sticky; top:0; z-index:100; }
+  }
   .admin-tab-btn { background:0; border:1px solid #2A5A2A; color:#8AAA8A; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700; white-space:nowrap; min-height:40px; transition:all 0.2s; }
   .admin-tab-btn.active { background:rgba(42, 122, 42, 0.3); color:#A5D6A7; border-color:#2A7A2A; }
   .admin-tab-content { display:none; flex-direction:column; overflow-y:auto; }
