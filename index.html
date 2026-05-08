@@ -257,7 +257,7 @@
   .admin-tab-btn { padding:10px 22px; border-radius:8px 8px 0 0; cursor:pointer; font-size:12px; font-weight:700; white-space:nowrap; flex-shrink:0; transition:all 0.2s; position:relative; bottom:-1.5px; border-width:1.5px; border-style:solid; }
   .admin-tab-btn.active { z-index:3; }
   .admin-tab-content { display:none; flex-direction:column; overflow-y:auto; border-width:1.5px; border-style:solid; border-radius:0 8px 8px 8px; position:relative; z-index:1; }
-  .admin-tab-content.active { display:flex; }
+  .admin-tab-content.active { display:flex; flex:1; min-height:0; }
 
   /* Bookings — Green */
   .admin-tab-btn:nth-child(1) { background:#2E7D32; border-color:#2E7D32; color:white; }
@@ -277,8 +277,8 @@
   /* Ask Mo tab — Purple */
   .admin-tab-btn:nth-child(4) { background:#6A1B9A; border-color:#6A1B9A; color:white; }
   .admin-tab-btn:nth-child(4).active { background:#F3E5F5; border-color:#6A1B9A; border-bottom-color:#F3E5F5; color:#4A148C; }
-  #askmo-tab { background:#F3E5F5; border-color:#6A1B9A; }
-  .mo-messages { flex:1; background:#1A0A2E; border:1.5px solid #6A1B9A; border-bottom:none; border-radius:10px 10px 0 0; padding:14px; overflow-y:auto; min-height:280px; max-height:420px; }
+  #askmo-tab { background:#F3E5F5; border-color:#6A1B9A; flex:1; }
+  .mo-messages { flex:1; background:#1A0A2E; border:1.5px solid #6A1B9A; border-bottom:none; border-radius:10px 10px 0 0; padding:14px; overflow-y:auto; min-height:0; }
   .mo-msg { display:flex; margin-bottom:10px; }
   .mo-msg-ai { justify-content:flex-start; }
   .mo-msg-user { justify-content:flex-end; }
@@ -586,7 +586,7 @@
       <h1 class="admin-title">Ask Mo</h1>
       <span style="font-size:11px;color:#7B1FA2;font-weight:600">AI assistant — knows all your bookings, invoices & receipts</span>
     </div>
-    <div style="padding:0 12px 12px;display:flex;flex-direction:column;flex:1">
+    <div style="padding:0 12px 12px;display:flex;flex-direction:column;flex:1;min-height:0">
       <div class="mo-messages" id="mo-messages">
         <div class="mo-msg mo-msg-ai">
           <div class="mo-bubble mo-bubble-ai">Hey, I'm Mo! 👋 I have access to all your bookings, invoices, and receipts. Ask me anything — job schedules, unpaid invoices, revenue totals, customer info, you name it.</div>
