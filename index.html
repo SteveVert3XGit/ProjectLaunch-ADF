@@ -163,7 +163,10 @@
     
     .admin-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;border-bottom:1px solid #1A2B1A;padding-bottom:12px}
     .admin-stat-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
-    .admin-stat-item{display:flex;flex-direction:column}
+    .admin-stat-item{display:flex;flex-direction:column;border-radius:8px;padding:6px 8px;margin:-6px -8px;transition:all 0.18s}
+    .admin-stat-item.stat-active{background:rgba(42,122,42,0.25);border:1px solid #2A7A2A;margin:-6px -8px}
+    .admin-stat-item.stat-active .admin-stat-label{color:#A5D6A7}
+    .admin-stat-item.stat-active .admin-stat-value{color:white}
     .admin-stat-label{font-size:10px;color:#4A6A4A;text-transform:uppercase;font-weight:600;margin-bottom:3px}
     .admin-stat-value{font-family:'DM Serif Display',Georgia,serif;font-size:18px;color:#A5D6A7;font-weight:700}
     .admin-stat-value.revenue{color:#F5A623}
@@ -849,6 +852,21 @@ function bkNext(){
 function toggleStats(){const content=document.getElementById('admin-stats-content');const toggle=document.getElementById('admin-stats-toggle');if(content.style.display==='none'){content.style.display='block';toggle.textContent='▼';}else{content.style.display='none';toggle.textContent='▶';}}
 function setPeriod(p){adminPeriod=p;statusFilter=null;document.querySelectorAll('.admin-period-btn').forEach(b=>b.classList.remove('active'));document.getElementById('period-'+p).classList.add('active');adminRender();}
 function setStatusFilter(status){statusFilter=statusFilter===status?null:status;adminRender();}
+
+function updateStatHighlights(){
+  const map = {
+    'stat-total': null, 'stat-revenue': null,
+    'stat-pending': 'pending', 'stat-pending-svcs': 'pending',
+    'stat-confirmed': 'confirmed', 'stat-completed': 'completed'
+  };
+  Object.entries(map).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const item = el.closest('.admin-stat-item');
+    if (!item) return;
+    item.classList.toggle('stat-active', statusFilter === val && val !== null || (val === null && statusFilter === null && id === 'stat-total'));
+  });
+}
 function selectBooking(id){adminSelected=adminSelected===id?null:id;adminRender();}
 function saveRicardoNotes(id){const b=bookings.find(x=>x.id===id);if(b){b.ricardoNotes=document.getElementById('ricardo-notes-textarea').value;localStorage.setItem(b.id,JSON.stringify(b));loadBookings();}}
 function cancelRicardoNotes(){adminSelected=null;adminRender();}
@@ -925,6 +943,7 @@ function adminRender(){
   }
   
   if(adminSelected){const b=bookings.find(x=>x.id===adminSelected);if(b){const custNotes=b.address||'Gate code, special instructions, etc.';const notes=b.ricardoNotes||'';let actionBtns='';if(b.status==='pending'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="confirmBooking('${b.id}')">✓ Confirm</button>`;}else if(b.status==='confirmed'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="completeBooking('${b.id}')">✓ Complete</button>`;}else if(b.status==='completed'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="generateInvoice('${b.id}')">📄 Generate Invoice</button>`;}document.getElementById('admin-detail-modal').classList.add('show');document.getElementById('admin-detail-modal-content').innerHTML=`<button class="admin-detail-modal-close" onclick="selectBooking(null)">✕</button><div class="admin-detail-name">${b.fname} ${b.lname}</div><div class="admin-info-section"><div class="admin-info-section-title">Contact</div><div class="admin-info-row"><span class="admin-info-label">📞</span><span class="admin-info-val">${b.phone}</span></div><div class="admin-info-row"><span class="admin-info-label">✉</span><span class="admin-info-val">${b.email}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Service Details</div><div class="admin-info-row"><span class="admin-info-label">Service</span><span class="admin-info-val">${b.service}</span></div><div class="admin-info-row"><span class="admin-info-label">Date</span><span class="admin-info-val">${new Date(b.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</span></div><div class="admin-info-row"><span class="admin-info-label">Time</span><span class="admin-info-val">${b.time}</span></div><div class="admin-info-row"><span class="admin-info-label">Price</span><span class="admin-info-val">${b.price}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Location</div><div class="admin-info-row"><span class="admin-info-label">Address</span><span class="admin-info-val">${b.address}</span></div><div class="admin-info-row"><span class="admin-info-label">City</span><span class="admin-info-val">${b.city}, ${b.zip}</span></div><div class="admin-info-row" style="border:none;padding-top:4px"><a href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(b.address + ', ' + b.city + ', CO ' + b.zip)}" target="_blank" style="font-size:12px;color:#2A7A2A;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:5px">🗺️ Get Directions →</a></div></div><div class="admin-info-section"><div class="admin-info-section-title">Customer Notes</div><div class="admin-notes-area">${custNotes||'<span class="admin-notes-empty">None</span>'}</div></div><div class="admin-info-section"><div class="admin-info-section-title">Your Notes</div><textarea class="admin-textarea" id="ricardo-notes-textarea" placeholder="Add your notes here...">${notes}</textarea></div><div class="admin-actions">${actionBtns}<button class="admin-action-btn admin-action-save" onclick="saveRicardoNotes('${b.id}')">Save Notes</button><button class="admin-action-btn admin-action-cancel-edit" onclick="cancelRicardoNotes()">Cancel</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid #1E2D1E"><div class="admin-info-row" style="flex-direction:column;border:none;padding:0"><span class="admin-info-label">Invoice Status</span><span class="admin-info-val" style="margin-top:3px">${b.invoiceSent ? 'Sent - ' + b.invoiceId : 'Not sent'}</span></div><div class="admin-info-row" style="flex-direction:column;border:none;padding:0"><span class="admin-info-label">Payment Status</span><span class="admin-info-val" style="margin-top:3px">${b.paymentReceived ? 'Received - ' + b.paymentMethod : 'Not received'}</span></div></div>`;}else{document.getElementById('admin-detail-modal').classList.remove('show');}}else{document.getElementById('admin-detail-modal').classList.remove('show');}
+  updateStatHighlights();
 }
 
 document.getElementById('svc-grid').innerHTML=SERVICES.map((s,i)=>`<div class="s-svc-card"><div class="s-svc-icon">${s.icon}</div><div class="s-svc-name">${s.name}</div><div class="s-svc-desc">Professional service</div><div class="s-svc-right"><div class="s-svc-price">${s.price}</div><button class="s-svc-book" onclick="openBooking(${i})">Book</button></div></div>`).join('');
