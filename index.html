@@ -970,6 +970,9 @@ function p2ShowInvoice(invoiceId) {
     </div>`;
   
   detailDiv.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px">
+      <button onclick="p2CloseInvoice()" style="background:none;border:1px solid #CDDECA;border-radius:6px;color:#4A6A4A;cursor:pointer;padding:4px 10px;font-size:14px;font-weight:700;line-height:1">✕</button>
+    </div>
     ${paymentStatusHTML}
     
     <div class="p2-invoice-display">
@@ -1240,6 +1243,9 @@ function p2ShowReceipt(paymentId) {
   const methodDisplay = methodIcon[receipt.paymentMethod] || '💳';
   
   detailDiv.innerHTML = `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:6px">
+      <button onclick="p2CloseReceipt()" style="background:none;border:1px solid #CDDECA;border-radius:6px;color:#4A6A4A;cursor:pointer;padding:4px 10px;font-size:14px;font-weight:700;line-height:1">✕</button>
+    </div>
     <div class="p2-receipt-display">
       <div class="p2-receipt-icon">✓</div>
       <div class="p2-receipt-title">Payment Received</div>
@@ -1309,6 +1315,18 @@ function p2RenderCalendar() {
   }
   
   calDiv.innerHTML = html;
+}
+
+function p2CloseInvoice() {
+  p2SelectedInvoice = null;
+  document.getElementById('p2-invoice-detail').innerHTML = '<div style="text-align:center;color:#8AAA8A;padding:20px">Select an invoice to view</div>';
+  p2RenderInvoices();
+}
+
+function p2CloseReceipt() {
+  p2SelectedPayment = null;
+  document.getElementById('p2-receipt-detail').innerHTML = '<div style="text-align:center;color:#8AAA8A;padding:20px">Select a receipt to view</div>';
+  p2RenderReceipts();
 }
 
 function p2RenderInvoiceDashboard() {
