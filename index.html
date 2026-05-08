@@ -796,12 +796,14 @@ function switchView(v){
   document.querySelectorAll('.btn-switch').forEach((b,i)=>b.classList.toggle('active',v===(['site','admin'][i])));
   const fab=document.getElementById('mo-fab');
   if(v==='admin') fab.classList.add('admin-visible');
-  else { fab.classList.remove('admin-visible'); document.getElementById('mo-popup').classList.remove('open'); }
+  else { fab.classList.remove('admin-visible'); fab.style.display=''; document.getElementById('mo-popup').classList.remove('open'); }
 }
 
 function toggleMoPopup(){
   const popup=document.getElementById('mo-popup');
+  const fab=document.getElementById('mo-fab');
   popup.classList.toggle('open');
+  fab.style.display=popup.classList.contains('open')?'none':'flex';
   if(popup.classList.contains('open')) document.getElementById('mo-input').focus();
 }
 function openBooking(i){bkStep=1;bkService=i!==null?SERVICES[i]:null;bkDate=null;bkTime=null;document.getElementById('bk-overlay').classList.add('open');render();}
