@@ -277,25 +277,30 @@
   .admin-tab-btn:nth-child(3).active { background:#FFF3E0; border-color:#E65100; border-bottom-color:#FFF3E0; color:#BF360C; }
   #receipts-tab { background:#FFF3E0; border-color:#E65100; }
 
-  /* Ask Mo tab — Purple */
-  .admin-tab-btn:nth-child(4) { background:#6A1B9A; border-color:#6A1B9A; color:white; }
-  .admin-tab-btn:nth-child(4).active { background:#F3E5F5; border-color:#6A1B9A; border-bottom-color:#F3E5F5; color:#4A148C; }
-  #askmo-tab { background:#F3E5F5; border-color:#6A1B9A; flex:1; }
-  .mo-messages { flex:1; background:#1A0A2E; border:1.5px solid #6A1B9A; border-bottom:none; border-radius:10px 10px 0 0; padding:14px; overflow-y:auto; min-height:0; }
-  .mo-msg { display:flex; margin-bottom:10px; }
+  /* Mo floating widget */
+  .mo-fab { position:fixed; bottom:20px; right:20px; z-index:9000; background:#6A1B9A; color:white; border:none; border-radius:24px; padding:11px 18px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; box-shadow:0 4px 16px rgba(106,27,154,0.5); display:none; align-items:center; gap:7px; transition:all 0.2s; white-space:nowrap; }
+  .mo-fab:hover { background:#7B1FA2; transform:translateY(-2px); box-shadow:0 6px 20px rgba(106,27,154,0.6); }
+  .mo-fab.admin-visible { display:flex; }
+  .mo-popup { position:fixed; bottom:72px; right:20px; z-index:8999; width:320px; max-width:calc(100vw - 40px); background:#1A0A2E; border:1.5px solid #6A1B9A; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.5); display:none; flex-direction:column; overflow:hidden; }
+  .mo-popup.open { display:flex; }
+  .mo-popup-header { background:#2D1050; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #3A1060; }
+  .mo-popup-title { font-size:13px; font-weight:700; color:#DDD0F5; display:flex; align-items:center; gap:7px; }
+  .mo-popup-close { background:none; border:none; color:#9C4AC7; cursor:pointer; font-size:18px; padding:2px 6px; line-height:1; }
+  .mo-messages { height:320px; padding:14px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+  .mo-msg { display:flex; }
   .mo-msg-ai { justify-content:flex-start; }
   .mo-msg-user { justify-content:flex-end; }
-  .mo-bubble { max-width:85%; padding:10px 14px; border-radius:12px; font-size:13px; line-height:1.65; }
+  .mo-bubble { max-width:85%; padding:10px 14px; border-radius:12px; font-size:12px; line-height:1.65; }
   .mo-bubble-ai { background:#2D1050; color:#DDD0F5; border-radius:4px 12px 12px 12px; }
   .mo-bubble-user { background:#6A1B9A; color:white; border-radius:12px 4px 12px 12px; }
-  .mo-input-bar { background:#150825; border:1.5px solid #6A1B9A; border-top:1px solid #3A1060; border-radius:0 0 10px 10px; padding:10px; display:flex; gap:8px; align-items:center; }
-  .mo-input { flex:1; background:#2D1050; border:1px solid #5A1A8A; border-radius:6px; padding:10px 12px; color:#E2D8F5; font-size:13px; font-family:inherit; outline:none; min-height:40px; }
+  .mo-input-bar { background:#150825; border-top:1px solid #3A1060; padding:10px; display:flex; gap:8px; align-items:center; }
+  .mo-input { flex:1; background:#2D1050; border:1px solid #5A1A8A; border-radius:6px; padding:9px 12px; color:#E2D8F5; font-size:13px; font-family:inherit; outline:none; min-height:38px; }
   .mo-input:focus { border-color:#9C4AC7; }
-  .mo-send { background:#6A1B9A; color:white; border:none; border-radius:6px; padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; min-height:40px; transition:background 0.18s; }
+  .mo-send { background:#6A1B9A; color:white; border:none; border-radius:6px; padding:9px 14px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; min-height:38px; transition:background 0.18s; }
   .mo-send:hover { background:#7B1FA2; }
   .mo-send:disabled { background:#3A1060; cursor:not-allowed; }
   .mo-typing-dots { display:flex; gap:5px; padding:3px 2px; align-items:center; }
-  .mo-typing-dots span { width:7px; height:7px; background:#9C4AC7; border-radius:50%; animation:moBounce 1.2s infinite; }
+  .mo-typing-dots span { width:6px; height:6px; background:#9C4AC7; border-radius:50%; animation:moBounce 1.2s infinite; }
   .mo-typing-dots span:nth-child(2) { animation-delay:0.2s; }
   .mo-typing-dots span:nth-child(3) { animation-delay:0.4s; }
   @keyframes moBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-7px)} }
@@ -451,7 +456,6 @@
     <button class="admin-tab-btn active" onclick="switchAdminTab('bookings')">📋 Bookings</button>
     <button class="admin-tab-btn" onclick="switchAdminTab('invoices')">📄 Invoices</button>
     <button class="admin-tab-btn" onclick="switchAdminTab('receipts')">🧾 Receipts</button>
-    <button class="admin-tab-btn" onclick="switchAdminTab('askmo')">🤖 Ask Mo</button>
   </div>
   
   <!-- BOOKINGS TAB (PHASE 1) -->
@@ -622,24 +626,25 @@
   </div>
 
   <!-- ASK MO TAB -->
-  <div id="askmo-tab" class="admin-tab-content" style="flex-direction:column">
-    <div style="padding:12px 12px 8px;display:flex;align-items:baseline;gap:10px">
-      <h1 class="admin-title">Ask Mo</h1>
-      <span style="font-size:11px;color:#7B1FA2;font-weight:600">AI assistant — knows all your bookings, invoices & receipts</span>
-    </div>
-    <div style="padding:0 12px 12px;display:flex;flex-direction:column;flex:1;min-height:0">
-      <div class="mo-messages" id="mo-messages">
-        <div class="mo-msg mo-msg-ai">
-          <div class="mo-bubble mo-bubble-ai">Hey, I'm Mo! 👋 I have access to all your bookings, invoices, and receipts. Ask me anything — job schedules, unpaid invoices, revenue totals, customer info, you name it.</div>
-        </div>
-      </div>
-      <div class="mo-input-bar">
-        <input class="mo-input" id="mo-input" type="text" placeholder="Ask Mo anything about your business..." onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendToMo();}">
-        <button class="mo-send" id="mo-send-btn" onclick="sendToMo()">Send →</button>
-      </div>
+
+</div>
+
+<!-- ASK MO FLOATING WIDGET (Admin only) -->
+<button class="mo-fab" id="mo-fab" onclick="toggleMoPopup()">🤖 Ask Mo</button>
+<div class="mo-popup" id="mo-popup">
+  <div class="mo-popup-header">
+    <div class="mo-popup-title">🤖 <span>Ask Mo</span> <span style="font-size:10px;color:#9C4AC7;font-weight:400">· your business AI</span></div>
+    <button class="mo-popup-close" onclick="toggleMoPopup()">✕</button>
+  </div>
+  <div class="mo-messages" id="mo-messages">
+    <div class="mo-msg mo-msg-ai">
+      <div class="mo-bubble mo-bubble-ai">Hey Ricardo! 👋 I know all your bookings, invoices, and receipts. Ask me anything.</div>
     </div>
   </div>
-
+  <div class="mo-input-bar">
+    <input class="mo-input" id="mo-input" type="text" placeholder="Ask anything..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendToMo();}">
+    <button class="mo-send" id="mo-send-btn" onclick="sendToMo()">Send</button>
+  </div>
 </div>
 <!-- BOOKING DETAIL MODAL -->
 <div class="admin-detail-modal" id="admin-detail-modal">
@@ -782,7 +787,20 @@ const SM={pending:{label:"Pending",color:"#92400E",bg:"#FEF3C7",dot:"#F59E0B"},c
 
 let bkStep=1,bkService=null,bkDate=null,bkTime=null,calY=new Date().getFullYear(),calM=new Date().getMonth(),bookings=[],adminSelected=null,adminPeriod='week',ricardoNotesEdit={},statusFilter=null,activeStatId=null;
 
-function switchView(v){document.getElementById('site-view').style.display=v==='site'?'block':'none';document.getElementById('admin-view').classList.toggle('show',v==='admin');document.querySelectorAll('.btn-switch').forEach((b,i)=>b.classList.toggle('active',v===(['site','admin'][i])));}
+function switchView(v){
+  document.getElementById('site-view').style.display=v==='site'?'block':'none';
+  document.getElementById('admin-view').classList.toggle('show',v==='admin');
+  document.querySelectorAll('.btn-switch').forEach((b,i)=>b.classList.toggle('active',v===(['site','admin'][i])));
+  const fab=document.getElementById('mo-fab');
+  if(v==='admin') fab.classList.add('admin-visible');
+  else { fab.classList.remove('admin-visible'); document.getElementById('mo-popup').classList.remove('open'); }
+}
+
+function toggleMoPopup(){
+  const popup=document.getElementById('mo-popup');
+  popup.classList.toggle('open');
+  if(popup.classList.contains('open')) document.getElementById('mo-input').focus();
+}
 function openBooking(i){bkStep=1;bkService=i!==null?SERVICES[i]:null;bkDate=null;bkTime=null;document.getElementById('bk-overlay').classList.add('open');render();}
 function closeBooking(){document.getElementById('bk-overlay').classList.remove('open');}
 function confirmBooking(id){const b=bookings.find(x=>x.id===id);if(b){b.status='confirmed';localStorage.setItem(b.id,JSON.stringify(b));loadBookings();}}
