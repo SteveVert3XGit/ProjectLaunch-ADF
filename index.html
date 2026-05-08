@@ -254,10 +254,25 @@
 
   /* ===== PHASE 2: TAB STYLES ===== */
   .admin-tab-nav { display:flex; gap:4px; padding:12px 12px 0; position:relative; z-index:2; }
-  .admin-tab-btn { background:#0A1208; border:1.5px solid #1A3A1A; border-bottom:1.5px solid #0A1208; color:#6A9A6A; padding:10px 20px; border-radius:8px 8px 0 0; cursor:pointer; font-size:12px; font-weight:700; white-space:nowrap; flex-shrink:0; transition:all 0.2s; position:relative; bottom:-1.5px; }
-  .admin-tab-btn.active { background:#0F1B0F; color:#A5D6A7; border-color:#2A7A2A; border-bottom:1.5px solid #0F1B0F; z-index:3; }
-  .admin-tab-content { display:none; flex-direction:column; overflow-y:auto; border:1.5px solid #2A7A2A; border-radius:0 8px 8px 8px; position:relative; z-index:1; }
+  .admin-tab-btn { padding:10px 22px; border-radius:8px 8px 0 0; cursor:pointer; font-size:12px; font-weight:700; white-space:nowrap; flex-shrink:0; transition:all 0.2s; position:relative; bottom:-1.5px; border-width:1.5px; border-style:solid; }
+  .admin-tab-btn.active { z-index:3; }
+  .admin-tab-content { display:none; flex-direction:column; overflow-y:auto; border-width:1.5px; border-style:solid; border-radius:0 8px 8px 8px; position:relative; z-index:1; }
   .admin-tab-content.active { display:flex; }
+
+  /* Bookings — Green */
+  .admin-tab-btn:nth-child(1) { background:#2E7D32; border-color:#2E7D32; color:white; }
+  .admin-tab-btn:nth-child(1).active { background:#E8F5E9; border-color:#2E7D32; border-bottom-color:#E8F5E9; color:#1B5E20; }
+  #bookings-tab { background:#E8F5E9; border-color:#2E7D32; }
+
+  /* Invoices — Blue */
+  .admin-tab-btn:nth-child(2) { background:#1565C0; border-color:#1565C0; color:white; }
+  .admin-tab-btn:nth-child(2).active { background:#E3F2FD; border-color:#1565C0; border-bottom-color:#E3F2FD; color:#0D47A1; }
+  #invoices-tab { background:#E3F2FD; border-color:#1565C0; }
+
+  /* Payments — Amber */
+  .admin-tab-btn:nth-child(3) { background:#E65100; border-color:#E65100; color:white; }
+  .admin-tab-btn:nth-child(3).active { background:#FFF3E0; border-color:#E65100; border-bottom-color:#FFF3E0; color:#BF360C; }
+  #payments-tab { background:#FFF3E0; border-color:#E65100; }
   .p2-split-view { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%; }
   .p2-split-left { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
   .p2-split-right { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; padding:14px; overflow-y:auto; }
