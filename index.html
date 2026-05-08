@@ -1481,7 +1481,23 @@ async function sendToMo() {
       })
     });
     const data = await response.json();
-    const reply = data.content?.[0]?.text || 'Sorry, I could not get a response.';
+
+    if (!response.ok || data.error) {
+      hideMoTyping();
+      const errMsg = typeof data.error === 'string' ? data.error : JSON.stringify(data.error);
+      addMoMessage('⚠️ ' + errMsg, 'ai');
+      btn.disabled = false; btn.textContent = 'Send →'; input.focus();
+      return;
+    }
+
+    const reply = data.content?.[0]?.text;
+    if (!reply) {
+      hideMoTyping();
+      addMoMessage('Got an empty response from the AI. Please try again.', 'ai');
+      btn.disabled = false; btn.textContent = 'Send →'; input.focus();
+      return;
+    }
+
     moHistory.push({ role: 'assistant', content: reply });
     hideMoTyping();
     addMoMessage(reply, 'ai');
