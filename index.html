@@ -20,7 +20,7 @@
     .switcher{position:fixed;top:0;left:0;right:0;z-index:9998;display:flex;align-items:center;justify-content:space-between;background:#0D1117;padding:10px;border-bottom:2px solid #E8722A;min-height:48px;gap:6px;width:100%}
     .switcher-left{display:flex;align-items:center;gap:6px;color:#A5D6A7;font-size:11px;font-weight:700}
     .switcher-btns{display:flex;gap:6px}
-    .btn-switch{padding:8px 12px;border-radius:6px;border:1px solid #2A5A2A;font-size:11px;font-weight:700;cursor:pointer;background:0;color:#8AAA8A;min-height:44px;min-width:44px;touch-action:manipulation}
+    .btn-switch{padding:8px 12px;border-radius:6px;border:1px solid #2A5A2A;font-size:11px;font-weight:700;cursor:pointer;background:0;color:#8AAA8A;min-height:44px;width:72px;touch-action:manipulation;text-align:center}
     .btn-switch.active{background:#E8722A;color:white;border:none}
     
     body{padding-top:48px}
@@ -340,8 +340,8 @@
 <div class="switcher">
   <div class="switcher-left">📍 ADF Demo</div>
   <div class="switcher-btns">
-    <button class="btn-switch active" onclick="switchView('site')">🌿 Site</button>
-    <button class="btn-switch" onclick="switchView('admin')">⚙️ Admin</button>
+    <button class="btn-switch active" onclick="switchView('site')">Site</button>
+    <button class="btn-switch" onclick="switchView('admin')">Admin</button>
   </div>
 </div>
 
