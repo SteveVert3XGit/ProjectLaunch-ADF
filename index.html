@@ -477,15 +477,15 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px">
         <!-- Column 1: Booking Status -->
           <div>
-            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter(null);adminRender()" title="Click to see all">
+            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter(null,'stat-total')" title="Click to see all">
               <span class="admin-stat-label">Total Bookings</span>
               <span class="admin-stat-value" id="stat-total">0</span>
             </div>
-            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter('pending');adminRender()" title="Click to filter">
+            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter('pending','stat-pending')" title="Click to filter">
               <span class="admin-stat-label">Pending Confirmation</span>
               <span class="admin-stat-value" id="stat-pending">0</span>
             </div>
-            <div class="admin-stat-item" style="cursor:pointer;opacity:0.7" onclick="setStatusFilter('confirmed');adminRender()" title="Click to filter">
+            <div class="admin-stat-item" style="cursor:pointer;opacity:0.7" onclick="setStatusFilter('confirmed','stat-confirmed')" title="Click to filter">
               <span class="admin-stat-label">Confirmed</span>
               <span class="admin-stat-value" id="stat-confirmed">0</span>
             </div>
@@ -493,15 +493,15 @@
           
           <!-- Column 2: Revenue & Status -->
           <div>
-            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter(null);adminRender()" title="Click to see all">
+            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter(null,'stat-revenue')" title="Click to see all">
               <span class="admin-stat-label">Total Revenue</span>
               <span class="admin-stat-value revenue" id="stat-revenue">$0</span>
             </div>
-            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter('pending');adminRender()" title="Click to filter">
+            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter('pending','stat-pending-svcs')" title="Click to filter">
               <span class="admin-stat-label">Services Pending</span>
               <span class="admin-stat-value" id="stat-pending-svcs">0</span>
             </div>
-            <div class="admin-stat-item" style="cursor:pointer;opacity:0.7" onclick="setStatusFilter('completed');adminRender()" title="Click to filter">
+            <div class="admin-stat-item" style="cursor:pointer;opacity:0.7" onclick="setStatusFilter('completed','stat-completed')" title="Click to filter">
               <span class="admin-stat-label">Completed</span>
               <span class="admin-stat-value" id="stat-completed">0</span>
             </div>
@@ -784,7 +784,7 @@ const SLOTS=["7:00 AM","8:00 AM","9:00 AM","10:00 AM","11:00 AM","12:00 PM","1:0
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const SM={pending:{label:"Pending",color:"#92400E",bg:"#FEF3C7",dot:"#F59E0B"},confirmed:{label:"Confirmed",color:"#065F46",bg:"#D1FAE5",dot:"#10B981"},completed:{label:"Completed",color:"#4B5563",bg:"#E5E7EB",dot:"#6B7280"}};
 
-let bkStep=1,bkService=null,bkDate=null,bkTime=null,calY=new Date().getFullYear(),calM=new Date().getMonth(),bookings=[],adminSelected=null,adminPeriod='week',ricardoNotesEdit={},statusFilter=null;
+let bkStep=1,bkService=null,bkDate=null,bkTime=null,calY=new Date().getFullYear(),calM=new Date().getMonth(),bookings=[],adminSelected=null,adminPeriod='week',ricardoNotesEdit={},statusFilter=null,activeStatId=null;
 
 function switchView(v){document.getElementById('site-view').style.display=v==='site'?'block':'none';document.getElementById('admin-view').classList.toggle('show',v==='admin');document.querySelectorAll('.btn-switch').forEach((b,i)=>b.classList.toggle('active',v===(['site','admin'][i])));}
 function openBooking(i){bkStep=1;bkService=i!==null?SERVICES[i]:null;bkDate=null;bkTime=null;document.getElementById('bk-overlay').classList.add('open');render();}
@@ -851,20 +851,20 @@ function bkNext(){
 
 function toggleStats(){const content=document.getElementById('admin-stats-content');const toggle=document.getElementById('admin-stats-toggle');if(content.style.display==='none'){content.style.display='block';toggle.textContent='▼';}else{content.style.display='none';toggle.textContent='▶';}}
 function setPeriod(p){adminPeriod=p;statusFilter=null;document.querySelectorAll('.admin-period-btn').forEach(b=>b.classList.remove('active'));document.getElementById('period-'+p).classList.add('active');adminRender();}
-function setStatusFilter(status){statusFilter=statusFilter===status?null:status;adminRender();}
+function setStatusFilter(status, statId){
+  const same = statusFilter===status && activeStatId===statId;
+  statusFilter = same ? null : status;
+  activeStatId = same ? null : statId;
+  adminRender();
+}
 
 function updateStatHighlights(){
-  const map = {
-    'stat-total': null, 'stat-revenue': null,
-    'stat-pending': 'pending', 'stat-pending-svcs': 'pending',
-    'stat-confirmed': 'confirmed', 'stat-completed': 'completed'
-  };
-  Object.entries(map).forEach(([id, val]) => {
+  ['stat-total','stat-revenue','stat-pending','stat-pending-svcs','stat-confirmed','stat-completed'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     const item = el.closest('.admin-stat-item');
     if (!item) return;
-    item.classList.toggle('stat-active', statusFilter === val && val !== null || (val === null && statusFilter === null && id === 'stat-total'));
+    item.classList.toggle('stat-active', activeStatId === id);
   });
 }
 function selectBooking(id){adminSelected=adminSelected===id?null:id;adminRender();}
