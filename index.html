@@ -1474,7 +1474,7 @@ async function sendToMo() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-3-5-haiku-20241022',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 1000,
         system: `You are Mo, a friendly and sharp AI assistant built into the admin console of Arbol De Fuego Services — a Denver Metro lawn and sprinkler care business run by Ricardo. You have full access to the live business data below. Be concise, helpful, and conversational. Do not use markdown formatting, bullet symbols, or asterisks in your replies — just plain friendly text. Speak naturally like a smart assistant, not a report generator. Always use the data to give specific, accurate answers.\n\nLIVE BUSINESS DATA:\n${buildMoContext()}`,
         messages: moHistory
