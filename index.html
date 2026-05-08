@@ -273,6 +273,29 @@
   .admin-tab-btn:nth-child(3) { background:#E65100; border-color:#E65100; color:white; }
   .admin-tab-btn:nth-child(3).active { background:#FFF3E0; border-color:#E65100; border-bottom-color:#FFF3E0; color:#BF360C; }
   #receipts-tab { background:#FFF3E0; border-color:#E65100; }
+
+  /* Ask Mo tab — Purple */
+  .admin-tab-btn:nth-child(4) { background:#6A1B9A; border-color:#6A1B9A; color:white; }
+  .admin-tab-btn:nth-child(4).active { background:#F3E5F5; border-color:#6A1B9A; border-bottom-color:#F3E5F5; color:#4A148C; }
+  #askmo-tab { background:#F3E5F5; border-color:#6A1B9A; }
+  .mo-messages { flex:1; background:#1A0A2E; border:1.5px solid #6A1B9A; border-bottom:none; border-radius:10px 10px 0 0; padding:14px; overflow-y:auto; min-height:280px; max-height:420px; }
+  .mo-msg { display:flex; margin-bottom:10px; }
+  .mo-msg-ai { justify-content:flex-start; }
+  .mo-msg-user { justify-content:flex-end; }
+  .mo-bubble { max-width:85%; padding:10px 14px; border-radius:12px; font-size:13px; line-height:1.65; }
+  .mo-bubble-ai { background:#2D1050; color:#DDD0F5; border-radius:4px 12px 12px 12px; }
+  .mo-bubble-user { background:#6A1B9A; color:white; border-radius:12px 4px 12px 12px; }
+  .mo-input-bar { background:#150825; border:1.5px solid #6A1B9A; border-top:1px solid #3A1060; border-radius:0 0 10px 10px; padding:10px; display:flex; gap:8px; align-items:center; }
+  .mo-input { flex:1; background:#2D1050; border:1px solid #5A1A8A; border-radius:6px; padding:10px 12px; color:#E2D8F5; font-size:13px; font-family:inherit; outline:none; min-height:40px; }
+  .mo-input:focus { border-color:#9C4AC7; }
+  .mo-send { background:#6A1B9A; color:white; border:none; border-radius:6px; padding:10px 18px; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; min-height:40px; transition:background 0.18s; }
+  .mo-send:hover { background:#7B1FA2; }
+  .mo-send:disabled { background:#3A1060; cursor:not-allowed; }
+  .mo-typing-dots { display:flex; gap:5px; padding:3px 2px; align-items:center; }
+  .mo-typing-dots span { width:7px; height:7px; background:#9C4AC7; border-radius:50%; animation:moBounce 1.2s infinite; }
+  .mo-typing-dots span:nth-child(2) { animation-delay:0.2s; }
+  .mo-typing-dots span:nth-child(3) { animation-delay:0.4s; }
+  @keyframes moBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-7px)} }
   .p2-split-view { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%; }
   .p2-split-left { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
   .p2-split-right { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; padding:14px; overflow-y:auto; }
@@ -383,6 +406,7 @@
     <button class="admin-tab-btn active" onclick="switchAdminTab('bookings')">📋 Bookings</button>
     <button class="admin-tab-btn" onclick="switchAdminTab('invoices')">📄 Invoices</button>
     <button class="admin-tab-btn" onclick="switchAdminTab('receipts')">🧾 Receipts</button>
+    <button class="admin-tab-btn" onclick="switchAdminTab('askmo')">🤖 Ask Mo</button>
   </div>
   
   <!-- BOOKINGS TAB (PHASE 1) -->
@@ -555,7 +579,26 @@
       </div>
     </div>
   </div>
-  
+
+  <!-- ASK MO TAB -->
+  <div id="askmo-tab" class="admin-tab-content" style="flex-direction:column">
+    <div style="padding:12px 12px 8px;display:flex;align-items:baseline;gap:10px">
+      <h1 class="admin-title">Ask Mo</h1>
+      <span style="font-size:11px;color:#7B1FA2;font-weight:600">AI assistant — knows all your bookings, invoices & receipts</span>
+    </div>
+    <div style="padding:0 12px 12px;display:flex;flex-direction:column;flex:1">
+      <div class="mo-messages" id="mo-messages">
+        <div class="mo-msg mo-msg-ai">
+          <div class="mo-bubble mo-bubble-ai">Hey, I'm Mo! 👋 I have access to all your bookings, invoices, and receipts. Ask me anything — job schedules, unpaid invoices, revenue totals, customer info, you name it.</div>
+        </div>
+      </div>
+      <div class="mo-input-bar">
+        <input class="mo-input" id="mo-input" type="text" placeholder="Ask Mo anything about your business..." onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendToMo();}">
+        <button class="mo-send" id="mo-send-btn" onclick="sendToMo()">Send →</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 <!-- BOOKING DETAIL MODAL -->
 <div class="admin-detail-modal" id="admin-detail-modal">
@@ -1367,6 +1410,89 @@ function toggleRecStats() {
   const visible = c.style.display !== 'none';
   c.style.display = visible ? 'none' : 'block';
   t.textContent = visible ? '▶' : '▼';
+}
+
+// ── ASK MO ─────────────────────────────────────────────
+let moHistory = [];
+
+function buildMoContext() {
+  const now = new Date().toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+  const bkLines = bookings.length === 0 ? 'None' : bookings.map(b =>
+    `  • [${b.id}] ${b.fname} ${b.lname} | ${b.service} | ${b.date} @ ${b.time} | ${b.address}, ${b.city} ${b.zip} | Status: ${b.status} | Price: ${b.price} | Invoice: ${b.invoiceSent ? b.invoiceId : 'not sent'} | Payment: ${b.paymentReceived ? 'received via ' + b.paymentMethod : 'not received'}`
+  ).join('\n');
+  const invLines = p2Invoices.length === 0 ? 'None' : p2Invoices.map(i =>
+    `  • [${i.id}] ${i.customerName} | ${i.serviceName} | $${i.amount} | Status: ${i.status} | Due: ${i.dueDate}`
+  ).join('\n');
+  const recLines = p2Receipts.length === 0 ? 'None' : p2Receipts.map(r =>
+    `  • [${r.id}] ${r.serviceName} | $${r.amountPaid} | Method: ${r.paymentMethod} | Date: ${new Date(r.createdAt).toLocaleDateString()}`
+  ).join('\n');
+  return `Today: ${now}\n\nBOOKINGS (${bookings.length}):\n${bkLines}\n\nINVOICES (${p2Invoices.length}):\n${invLines}\n\nRECEIPTS (${p2Receipts.length}):\n${recLines}`;
+}
+
+function addMoMessage(text, type) {
+  const msgs = document.getElementById('mo-messages');
+  const div = document.createElement('div');
+  div.className = 'mo-msg mo-msg-' + (type === 'ai' ? 'ai' : 'user');
+  const safe = text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  div.innerHTML = `<div class="mo-bubble mo-bubble-${type === 'ai' ? 'ai' : 'user'}">${safe}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showMoTyping() {
+  const msgs = document.getElementById('mo-messages');
+  const div = document.createElement('div');
+  div.className = 'mo-msg mo-msg-ai';
+  div.id = 'mo-typing';
+  div.innerHTML = '<div class="mo-bubble mo-bubble-ai"><div class="mo-typing-dots"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideMoTyping() {
+  const t = document.getElementById('mo-typing');
+  if (t) t.remove();
+}
+
+async function sendToMo() {
+  const input = document.getElementById('mo-input');
+  const btn = document.getElementById('mo-send-btn');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  input.value = '';
+  btn.disabled = true;
+  btn.textContent = '...';
+
+  addMoMessage(msg, 'user');
+  showMoTyping();
+
+  moHistory.push({ role: 'user', content: msg });
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are Mo, a friendly and sharp AI assistant built into the admin console of Arbol De Fuego Services — a Denver Metro lawn and sprinkler care business run by Ricardo. You have full access to the live business data below. Be concise, helpful, and conversational. Do not use markdown formatting, bullet symbols, or asterisks in your replies — just plain friendly text. Speak naturally like a smart assistant, not a report generator. Always use the data to give specific, accurate answers.\n\nLIVE BUSINESS DATA:\n${buildMoContext()}`,
+        messages: moHistory
+      })
+    });
+    const data = await response.json();
+    const reply = data.content?.[0]?.text || 'Sorry, I could not get a response.';
+    moHistory.push({ role: 'assistant', content: reply });
+    hideMoTyping();
+    addMoMessage(reply, 'ai');
+  } catch (err) {
+    hideMoTyping();
+    addMoMessage('Hmm, I had trouble connecting. Check your network and try again.', 'ai');
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Send →';
+  input.focus();
 }
 
 function p2LoadFromStorage() {
