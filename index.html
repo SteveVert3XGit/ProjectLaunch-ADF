@@ -212,6 +212,22 @@
     .admin-detail{display:none !important}
     .admin-detail.show{display:block}
     .admin-detail-close{position:absolute;top:10px;right:10px;background:0;border:0;color:#4A6A4A;cursor:pointer;font-size:18px;min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center}
+    
+    /* DASHBOARD RESPONSIVE LAYOUT */
+    .dashboard-container{display:flex;flex-direction:column;gap:20px;height:100%}
+    .dashboard-metrics{display:flex;flex-direction:column;gap:12px}
+    .dashboard-bookings{display:flex;flex-direction:column;min-height:400px}
+    
+    @media(min-width:1024px){
+      .dashboard-container{flex-direction:row;gap:24px}
+      .dashboard-metrics{flex:0 0 32%;gap:14px}
+      .dashboard-bookings{flex:1;min-height:600px}
+    }
+    
+    .metric-card{background:#0F1B0F;border:1px solid #1E2D1E;border-radius:10px;padding:16px;display:flex;justify-content:space-between;align-items:center}
+    .metric-label{font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#4A6A4A;margin-bottom:6px}
+    .metric-value{font-size:24px;font-weight:800;color:#A5D6A7;font-family:'DM Serif Display',Georgia,serif}
+    .metric-icon{font-size:28px;opacity:0.7}
     .admin-detail-name{font-family:'DM Serif Display',Georgia,serif;font-size:16px;color:#E2E8F0;margin-bottom:10px;padding-right:30px}
     
     .admin-info-section{margin-bottom:14px}
