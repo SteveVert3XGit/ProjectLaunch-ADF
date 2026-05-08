@@ -256,6 +256,49 @@
       .s-section{padding:40px 32px}
       .bk-modal{border-radius:16px;margin-bottom:0}
     }
+
+  /* ===== PHASE 2: TAB STYLES ===== */
+  .admin-tab-nav { background:#0D1117; padding:12px; border-bottom:1px solid #1E2D1E; display:flex; gap:8px; overflow-x:auto; }
+  .admin-tab-btn { background:0; border:1px solid #2A5A2A; color:#8AAA8A; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700; white-space:nowrap; min-height:40px; transition:all 0.2s; }
+  .admin-tab-btn.active { background:rgba(42, 122, 42, 0.3); color:#A5D6A7; border-color:#2A7A2A; }
+  .admin-tab-content { display:none; flex-direction:column; overflow-y:auto; }
+  .admin-tab-content.active { display:flex; }
+  .p2-split-view { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%; }
+  .p2-split-left { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
+  .p2-split-right { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; padding:14px; overflow-y:auto; }
+  .p2-list { flex:1; overflow-y:auto; }
+  .p2-list-item { padding:12px; border-bottom:1px solid #1A2B1A; cursor:pointer; background:0; border:none; width:100%; text-align:left; font-family:inherit; color:#E2E8F0; transition:all 0.18s; }
+  .p2-list-item:hover { background:rgba(42, 122, 42, 0.15); }
+  .p2-list-item.selected { background:#0A2810; border-left:3px solid #2A7A2A; padding-left:11px; }
+  .p2-list-item-primary { font-size:12px; font-weight:700; margin-bottom:2px; }
+  .p2-list-item-secondary { font-size:11px; color:#8AAA8A; }
+  .p2-empty { padding:20px; text-align:center; color:#5A7A5A; font-size:12px; }
+  .p2-header { padding:12px 14px; border-bottom:1px solid #1A2B1A; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+  .p2-header-title { font-size:12px; font-weight:700; color:#E2E8F0; text-transform:uppercase; }
+  .p2-invoice-display { background:white; padding:20px; border-radius:8px; margin-bottom:14px; color:#1A2B1A; }
+  .p2-invoice-header { border-bottom:2px solid #E8722A; padding-bottom:12px; margin-bottom:14px; }
+  .p2-invoice-business { font-size:16px; font-weight:700; color:#1B5E20; margin-bottom:4px; }
+  .p2-invoice-number { font-size:11px; color:#5A7A5A; font-family:monospace; }
+  .p2-invoice-section { margin-bottom:14px; }
+  .p2-invoice-section-title { font-size:11px; font-weight:700; color:#1B5E20; text-transform:uppercase; margin-bottom:6px; }
+  .p2-invoice-line { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F0F8F0; }
+  .p2-invoice-line:last-child { border-bottom:none; }
+  .p2-amount-due { font-size:18px; font-weight:800; color:#2A7A2A; text-align:right; padding-top:12px; border-top:2px solid #E8722A; }
+  .p2-receipt-display { background:white; padding:20px; border-radius:8px; margin-bottom:14px; color:#1A2B1A; text-align:center; }
+  .p2-receipt-icon { font-size:32px; margin-bottom:10px; }
+  .p2-receipt-title { font-size:16px; font-weight:700; color:#2A7A2A; margin-bottom:4px; }
+  .p2-receipt-number { font-size:13px; font-weight:700; color:#1B5E20; font-family:monospace; margin-bottom:14px; }
+  .p2-receipt-section { text-align:left; margin-bottom:12px; padding:12px; background:#F4F8F2; border-radius:6px; }
+  .p2-receipt-review { background:#FFF3E0; border-left:4px solid #E65100; padding:12px; border-radius:6px; margin-bottom:12px; text-align:left; }
+  .p2-receipt-review-title { font-size:12px; font-weight:700; color:#E65100; margin-bottom:6px; }
+  .p2-receipt-review-link { display:inline-block; background:#E65100; color:white; padding:7px 12px; border-radius:6px; text-decoration:none; font-size:11px; font-weight:700; cursor:pointer; }
+  .p2-delivery-status { display:flex; gap:14px; margin-top:12px; justify-content:center; font-size:11px; }
+  .p2-delivery-icon { width:32px; height:32px; border-radius:50%; background:#E8F5E9; display:flex; align-items:center; justify-content:center; color:#2A7A2A; font-weight:700; }
+  .p2-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+  .p2-action-btn { padding:9px 14px; border-radius:6px; border:1px solid #CDDECA; background:#F4F8F2; color:#2A7A2A; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+  .p2-action-btn:hover { background:#2A7A2A; color:white; border-color:#2A7A2A; }
+  .p2-action-btn.primary { background:#2A7A2A; color:white; border-color:#2A7A2A; }
+  @media(max-width:768px) { .p2-split-view { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -322,8 +365,18 @@
   </footer>
 </div>
 
-<!-- ADMIN DASHBOARD -->
+
+<!-- ADMIN DASHBOARD WITH PHASE 2 TABS -->
 <div id="admin-view">
+  <!-- TAB NAVIGATION -->
+  <div class="admin-tab-nav">
+    <button class="admin-tab-btn active" onclick="switchAdminTab('bookings')">📋 Bookings</button>
+    <button class="admin-tab-btn" onclick="switchAdminTab('invoices')">📄 Invoices</button>
+    <button class="admin-tab-btn" onclick="switchAdminTab('payments')">💳 Payments</button>
+  </div>
+  
+  <!-- BOOKINGS TAB (PHASE 1) -->
+  <div id="bookings-tab" class="admin-tab-content active" style="flex-direction:column">
   <div class="admin-main">
     <div style="display:flex;align-items:center;justify-content:space-between;position:relative;margin-bottom:10px">
       <h1 class="admin-title">Bookings</h1>
@@ -396,8 +449,38 @@
     <!-- Detail Panel -->
     <div class="admin-detail" id="admin-detail"></div>
   </div>
+  </div>
+  <!-- INVOICES TAB -->
+  <div id="invoices-tab" class="admin-tab-content">
+    <div class="p2-split-view" style="padding:12px">
+      <div class="p2-split-left">
+        <div class="p2-header">
+          <div class="p2-header-title">Invoices</div>
+        </div>
+        <div class="p2-list" id="p2-invoices-list"></div>
+      </div>
+      <div class="p2-split-right" id="p2-invoice-detail">
+        <div style="text-align:center;color:#8AAA8A;padding:20px">Select an invoice to view</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- PAYMENTS & RECEIPTS TAB -->
+  <div id="payments-tab" class="admin-tab-content">
+    <div class="p2-split-view" style="padding:12px">
+      <div class="p2-split-left">
+        <div class="p2-header">
+          <div class="p2-header-title">Payments</div>
+        </div>
+        <div class="p2-list" id="p2-payments-list"></div>
+      </div>
+      <div class="p2-split-right" id="p2-receipt-detail">
+        <div style="text-align:center;color:#8AAA8A;padding:20px">Select a payment to view receipt</div>
+      </div>
+    </div>
+  </div>
+  
 </div>
-
 <!-- BOOKING DETAIL MODAL -->
 <div class="admin-detail-modal" id="admin-detail-modal">
   <div class="admin-detail-modal-content" id="admin-detail-modal-content">
@@ -415,6 +498,97 @@
       <button class="invoice-btn invoice-btn-sms" onclick="sendInvoice('sms')">📱 Send via SMS</button>
       <button class="invoice-btn invoice-btn-email" onclick="sendInvoice('email')">✉️ Send via Email</button>
       <button class="invoice-btn invoice-btn-close" onclick="closeInvoice()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 2: CUSTOMER PAYMENT PAGE (MOCKED) -->
+<div id="p2-payment-modal" style="display:none;position:fixed;inset:0;background:rgba(10,26,10,0.85);z-index:5000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:12px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:24px;color:#1A2B1A">
+    <button onclick="p2ClosePaymentModal()" style="position:absolute;top:12px;right:12px;background:0;border:0;font-size:20px;cursor:pointer;color:#5A7A5A">✕</button>
+    
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:28px;font-weight:700;color:#2A7A2A;margin-bottom:8px">Arbol De Fuego</div>
+      <div style="font-size:12px;color:#5A7A5A">Online Payment</div>
+    </div>
+    
+    <div id="p2-payment-invoice-summary" style="background:#F4F8F2;padding:16px;border-radius:8px;margin-bottom:20px">
+      <!-- Invoice summary will be inserted here -->
+    </div>
+    
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;color:#1B5E20;text-transform:uppercase;margin-bottom:12px">Select Payment Method</div>
+      <div id="p2-payment-methods" style="display:grid;gap:10px">
+        <button onclick="p2SelectPaymentMethod('online_card')" style="padding:14px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+          💳 Pay with Card (Online)
+        </button>
+        <button onclick="p2SelectPaymentMethod('venmo')" style="padding:14px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+          📱 Venmo
+        </button>
+      </div>
+    </div>
+    
+    <div id="p2-payment-form" style="display:none">
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:11px;font-weight:700;color:#1B5E20;text-transform:uppercase;margin-bottom:6px">Card Number</label>
+        <input type="text" placeholder="4242 4242 4242 4242" style="width:100%;padding:12px;border:1.5px solid #CDDECA;border-radius:8px;font-size:14px;font-family:monospace" value="4242 4242 4242 4242" readonly>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#1B5E20;text-transform:uppercase;margin-bottom:6px">Expires</label>
+          <input type="text" placeholder="12/25" style="width:100%;padding:12px;border:1.5px solid #CDDECA;border-radius:8px;font-size:14px" value="12/25" readonly>
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#1B5E20;text-transform:uppercase;margin-bottom:6px">CVC</label>
+          <input type="text" placeholder="123" style="width:100%;padding:12px;border:1.5px solid #CDDECA;border-radius:8px;font-size:14px" value="123" readonly>
+        </div>
+      </div>
+      <button onclick="p2ProcessOnlinePayment()" style="width:100%;padding:14px;background:#2A7A2A;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='#1B5E20'" onmouseout="this.style.background='#2A7A2A'">
+        Pay $<span id="p2-payment-amount">0.00</span>
+      </button>
+    </div>
+    
+    <div id="p2-venmo-info" style="display:none;background:#FFF3E0;border-left:4px solid #E65100;padding:14px;border-radius:6px">
+      <div style="font-size:12px;font-weight:700;color:#E65100;margin-bottom:8px">📱 Venmo Payment</div>
+      <div style="font-size:12px;color:#1A2B1A;line-height:1.6">
+        Send payment to: <strong>@Ricardo-ArbolDeFuego</strong><br>
+        Amount: $<span id="p2-venmo-amount">0.00</span><br>
+        Reference: <span id="p2-venmo-ref">INV-0000</span>
+      </div>
+      <button onclick="p2ConfirmVenmoPayment()" style="width:100%;padding:10px;margin-top:12px;background:#E65100;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">
+        I've sent the payment
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 2: PAYMENT METHOD SELECTOR (For marking paid in person) -->
+<div id="p2-payment-method-modal" style="display:none;position:fixed;inset:0;background:rgba(10,26,10,0.85);z-index:5001;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:12px;width:100%;max-width:400px;padding:24px;color:#1A2B1A">
+    <button onclick="p2ClosePaymentMethodModal()" style="position:absolute;top:12px;right:12px;background:0;border:0;font-size:20px;cursor:pointer;color:#5A7A5A">✕</button>
+    
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:20px;font-weight:700;color:#2A7A2A">Payment Received</div>
+      <div style="font-size:12px;color:#5A7A5A;margin-top:6px">How did the customer pay?</div>
+    </div>
+    
+    <div id="p2-method-details" style="background:#F4F8F2;padding:14px;border-radius:8px;margin-bottom:20px;text-align:center;font-size:12px;color:#1A2B1A">
+      <!-- Customer and amount details will go here -->
+    </div>
+    
+    <div style="display:grid;gap:10px">
+      <button onclick="p2CompletePaymentWithMethod('cash')" style="padding:12px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+        💰 Cash
+      </button>
+      <button onclick="p2CompletePaymentWithMethod('card')" style="padding:12px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+        💳 Physical Card
+      </button>
+      <button onclick="p2CompletePaymentWithMethod('venmo')" style="padding:12px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+        📱 Venmo
+      </button>
+      <button onclick="p2ClosePaymentMethodModal()" style="padding:12px;border:2px solid #ddd;border-radius:8px;background:#F5F5F5;color:#666;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#F5F5F5'">
+        Cancel
+      </button>
     </div>
   </div>
 </div>
@@ -495,7 +669,7 @@ function bkNext(){
     const month=String(bkDate.getMonth()+1).padStart(2,'0');
     const day=String(bkDate.getDate()).padStart(2,'0');
     const dateStr=`${year}-${month}-${day}`;
-    const booking={id,service:bkService.name,icon:bkService.icon,price:bkService.raw,date:dateStr,time:bkTime,status:'pending',fname:document.getElementById('bk-fname').value,lname:document.getElementById('bk-lname').value,phone:document.getElementById('bk-phone').value,email:document.getElementById('bk-email').value,address:document.getElementById('bk-street').value,city:document.getElementById('bk-city').value,zip:document.getElementById('bk-zip').value,ricardoNotes:'',createdAt:new Date().toISOString()};
+    const booking={id,service:bkService.name,icon:bkService.icon,price:bkService.raw,date:dateStr,time:bkTime,status:'pending',fname:document.getElementById('bk-fname').value,lname:document.getElementById('bk-lname').value,phone:document.getElementById('bk-phone').value,email:document.getElementById('bk-email').value,address:document.getElementById('bk-street').value,city:document.getElementById('bk-city').value,zip:document.getElementById('bk-zip').value,ricardoNotes:'',createdAt:new Date().toISOString(),invoiceSent:false,invoiceId:null,paymentReceived:false,paymentMethod:null,paymentId:null};
     console.log('Creating booking with date:', dateStr, 'booking:', booking);
     localStorage.setItem(id,JSON.stringify(booking));
     console.log('Booking saved:', booking);
@@ -589,12 +763,491 @@ function adminRender(){
     document.getElementById('admin-list').innerHTML='<div class="admin-empty">Error loading bookings</div>';
   }
   
-  if(adminSelected){const b=bookings.find(x=>x.id===adminSelected);if(b){const custNotes=b.address||'Gate code, special instructions, etc.';const notes=b.ricardoNotes||'';let actionBtns='';if(b.status==='pending'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="confirmBooking('${b.id}')">✓ Confirm</button>`;}else if(b.status==='confirmed'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="completeBooking('${b.id}')">✓ Complete</button>`;}else if(b.status==='completed'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="generateInvoice('${b.id}')">📄 Generate Invoice</button>`;}document.getElementById('admin-detail-modal').classList.add('show');document.getElementById('admin-detail-modal-content').innerHTML=`<button class="admin-detail-modal-close" onclick="selectBooking(null)">✕</button><div class="admin-detail-name">${b.fname} ${b.lname}</div><div class="admin-info-section"><div class="admin-info-section-title">Contact</div><div class="admin-info-row"><span class="admin-info-label">📞</span><span class="admin-info-val">${b.phone}</span></div><div class="admin-info-row"><span class="admin-info-label">✉</span><span class="admin-info-val">${b.email}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Service Details</div><div class="admin-info-row"><span class="admin-info-label">Service</span><span class="admin-info-val">${b.service}</span></div><div class="admin-info-row"><span class="admin-info-label">Date</span><span class="admin-info-val">${new Date(b.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</span></div><div class="admin-info-row"><span class="admin-info-label">Time</span><span class="admin-info-val">${b.time}</span></div><div class="admin-info-row"><span class="admin-info-label">Price</span><span class="admin-info-val">${b.price}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Location</div><div class="admin-info-row"><span class="admin-info-label">Address</span><span class="admin-info-val">${b.address}</span></div><div class="admin-info-row"><span class="admin-info-label">City</span><span class="admin-info-val">${b.city}, ${b.zip}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Customer Notes</div><div class="admin-notes-area">${custNotes||'<span class="admin-notes-empty">None</span>'}</div></div><div class="admin-info-section"><div class="admin-info-section-title">Your Notes</div><textarea class="admin-textarea" id="ricardo-notes-textarea" placeholder="Add your notes here...">${notes}</textarea></div><div class="admin-actions">${actionBtns}<button class="admin-action-btn admin-action-save" onclick="saveRicardoNotes('${b.id}')">Save Notes</button><button class="admin-action-btn admin-action-cancel-edit" onclick="cancelRicardoNotes()">Cancel</button></div>`;}else{document.getElementById('admin-detail-modal').classList.remove('show');}}else{document.getElementById('admin-detail-modal').classList.remove('show');}
+  if(adminSelected){const b=bookings.find(x=>x.id===adminSelected);if(b){const custNotes=b.address||'Gate code, special instructions, etc.';const notes=b.ricardoNotes||'';let actionBtns='';if(b.status==='pending'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="confirmBooking('${b.id}')">✓ Confirm</button>`;}else if(b.status==='confirmed'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="completeBooking('${b.id}')">✓ Complete</button>`;}else if(b.status==='completed'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="generateInvoice('${b.id}')">📄 Generate Invoice</button>`;}document.getElementById('admin-detail-modal').classList.add('show');document.getElementById('admin-detail-modal-content').innerHTML=`<button class="admin-detail-modal-close" onclick="selectBooking(null)">✕</button><div class="admin-detail-name">${b.fname} ${b.lname}</div><div class="admin-info-section"><div class="admin-info-section-title">Contact</div><div class="admin-info-row"><span class="admin-info-label">📞</span><span class="admin-info-val">${b.phone}</span></div><div class="admin-info-row"><span class="admin-info-label">✉</span><span class="admin-info-val">${b.email}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Service Details</div><div class="admin-info-row"><span class="admin-info-label">Service</span><span class="admin-info-val">${b.service}</span></div><div class="admin-info-row"><span class="admin-info-label">Date</span><span class="admin-info-val">${new Date(b.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</span></div><div class="admin-info-row"><span class="admin-info-label">Time</span><span class="admin-info-val">${b.time}</span></div><div class="admin-info-row"><span class="admin-info-label">Price</span><span class="admin-info-val">${b.price}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Location</div><div class="admin-info-row"><span class="admin-info-label">Address</span><span class="admin-info-val">${b.address}</span></div><div class="admin-info-row"><span class="admin-info-label">City</span><span class="admin-info-val">${b.city}, ${b.zip}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Customer Notes</div><div class="admin-notes-area">${custNotes||'<span class="admin-notes-empty">None</span>'}</div></div><div class="admin-info-section"><div class="admin-info-section-title">Your Notes</div><textarea class="admin-textarea" id="ricardo-notes-textarea" placeholder="Add your notes here...">${notes}</textarea></div><div class="admin-actions">${actionBtns}<button class="admin-action-btn admin-action-save" onclick="saveRicardoNotes('${b.id}')">Save Notes</button><button class="admin-action-btn admin-action-cancel-edit" onclick="cancelRicardoNotes()">Cancel</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid #1E2D1E"><div class="admin-info-row" style="flex-direction:column;border:none;padding:0"><span class="admin-info-label">Invoice Status</span><span class="admin-info-val" style="margin-top:3px">${b.invoiceSent ? 'Sent - ' + b.invoiceId : 'Not sent'}</span></div><div class="admin-info-row" style="flex-direction:column;border:none;padding:0"><span class="admin-info-label">Payment Status</span><span class="admin-info-val" style="margin-top:3px">${b.paymentReceived ? 'Received - ' + b.paymentMethod : 'Not received'}</span></div></div>`;}else{document.getElementById('admin-detail-modal').classList.remove('show');}}else{document.getElementById('admin-detail-modal').classList.remove('show');}
 }
 
 document.getElementById('svc-grid').innerHTML=SERVICES.map((s,i)=>`<div class="s-svc-card"><div class="s-svc-icon">${s.icon}</div><div class="s-svc-name">${s.name}</div><div class="s-svc-desc">Professional service</div><div class="s-svc-right"><div class="s-svc-price">${s.price}</div><button class="s-svc-book" onclick="openBooking(${i})">Book</button></div></div>`).join('');
 document.getElementById('area-chips').innerHTML=AREAS.map(a=>`<span style="background:#E8F5E9;color:#1B5E20;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:600">${a}</span>`).join('');
 loadBookings();
+
+
+// ===== PHASE 2: INVOICE & PAYMENT SYSTEM =====
+let p2Invoices = [];
+let p2Payments = [];
+let p2Receipts = [];
+let p2SelectedInvoice = null;
+let p2SelectedPayment = null;
+
+// ===== BRIDGE: HOOK PHASE 1 INVOICE SENDING TO PHASE 2 =====
+// Store original sendInvoice function
+const phase1SendInvoice = typeof sendInvoice === 'function' ? sendInvoice : null;
+
+// Override sendInvoice to connect to Phase 2
+function sendInvoice(method) {
+  const id = document.getElementById('invoice-booking-id').value;
+  const b = bookings.find(x => x.id === id);
+  if (!b) return;
+  
+  // Generate Phase 2 invoice when sending
+  const invoice = p2GenerateInvoiceFromBooking(id);
+  
+  // Mark invoice as sent on booking
+  b.invoiceSent = true;
+  b.invoiceId = invoice.id;
+  localStorage.setItem(b.id, JSON.stringify(b));
+  
+  // Show Phase 1 alert
+  let msg = '';
+  if (method === 'sms') {
+    msg = `Invoice sent via SMS to ${b.phone}`;
+  } else if (method === 'email') {
+    msg = `Invoice sent to ${b.email}`;
+  }
+  
+  alert(msg + '\n\n📋 Invoice: INV-' + b.id.substring(4) + '\n💰 Amount: ' + b.price + '\n📱 Contact: (720) 210-3718\n\n✅ Invoice added to Invoices tab');
+  
+  closeInvoice();
+}
+
+function switchAdminTab(tabName) {
+  document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+  
+  const tab = document.getElementById(tabName + '-tab');
+  const btn = event?.target;
+  
+  if (tab) {
+    tab.classList.add('active');
+    if (tab.id === 'invoices-tab') p2RenderInvoices();
+    if (tab.id === 'payments-tab') p2RenderPayments();
+  }
+  if (btn) btn.classList.add('active');
+}
+
+function p2GenerateInvoiceFromBooking(bookingId) {
+  const booking = bookings.find(b => b.id === bookingId);
+  if (!booking) return;
+  
+  const invoiceId = 'INV-' + Math.floor(Math.random() * 1000000);
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + 15);
+  
+  const invoice = {
+    id: invoiceId,
+    bookingId: bookingId,
+    serviceName: booking.service,
+    serviceIcon: booking.icon,
+    amount: parseFloat(booking.price.replace(/[^0-9.]/g, '')),
+    customerName: booking.fname + ' ' + booking.lname,
+    customerEmail: booking.email,
+    customerPhone: booking.phone,
+    customerAddress: booking.address + ', ' + booking.city + ' ' + booking.zip,
+    date: booking.date,
+    time: booking.time,
+    createdAt: new Date().toISOString(),
+    dueDate: dueDate.toISOString().split('T')[0],
+    status: 'sent'
+  };
+  
+  p2Invoices.push(invoice);
+  localStorage.setItem('p2_invoices', JSON.stringify(p2Invoices));
+  console.log('✅ Invoice generated:', invoiceId);
+  console.log('📧 [EmailService] Invoice sent to:', booking.email);
+  console.log('📱 [SMSService] Invoice SMS sent to:', booking.phone);
+  
+  return invoice;
+}
+
+function p2RenderInvoices() {
+  const list = document.getElementById('p2-invoices-list');
+  
+  if (p2Invoices.length === 0) {
+    list.innerHTML = '<div class="p2-empty">No invoices yet</div>';
+    return;
+  }
+  
+  list.innerHTML = p2Invoices.map(inv => `
+    <button class="p2-list-item ${p2SelectedInvoice === inv.id ? 'selected' : ''}" onclick="p2ShowInvoice('${inv.id}')">
+      <div class="p2-list-item-primary">${inv.serviceName}</div>
+      <div class="p2-list-item-secondary">$${inv.amount.toFixed(2)} • ${inv.customerName}</div>
+      <div class="p2-list-item-secondary">${inv.status.toUpperCase()}</div>
+    </button>
+  `).join('');
+}
+
+function p2ShowInvoice(invoiceId) {
+  p2SelectedInvoice = invoiceId;
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  const detailDiv = document.getElementById('p2-invoice-detail');
+  const booking = bookings.find(b => b.id === invoice.bookingId);
+  
+  const paymentStatusHTML = invoice.status === 'paid' ? 
+    `<div style="background:#E8F5E9;border-left:4px solid #2A7A2A;padding:12px;border-radius:6px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#1B5E20">✓ PAID</div>
+      <div style="font-size:11px;color:#2A7A2A;margin-top:3px">Payment Method: ${invoice.paymentMethod || 'Unknown'}</div>
+    </div>` : 
+    `<div style="background:#FFF3E0;border-left:4px solid #E65100;padding:12px;border-radius:6px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#E65100">⏳ PAYMENT DUE</div>
+      <div style="font-size:11px;color:#1A2B1A;margin-top:3px">We accept: 💳 Card | 💰 Cash | 📱 Venmo</div>
+    </div>`;
+  
+  detailDiv.innerHTML = `
+    ${paymentStatusHTML}
+    
+    <div class="p2-invoice-display">
+      <div class="p2-invoice-header">
+        <div class="p2-invoice-business">ARBOL DE FUEGO</div>
+        <div class="p2-invoice-number">Invoice #${invoice.id}</div>
+      </div>
+      
+      <div class="p2-invoice-section">
+        <div class="p2-invoice-section-title">Bill To</div>
+        <div class="p2-invoice-section-content">
+          ${invoice.customerName}<br>
+          ${invoice.customerAddress}<br>
+          ${invoice.customerPhone}<br>
+          ${invoice.customerEmail}
+        </div>
+      </div>
+      
+      <div class="p2-invoice-section">
+        <div class="p2-invoice-section-title">Service Details</div>
+        <div class="p2-invoice-line">
+          <span>${invoice.serviceIcon} ${invoice.serviceName}</span>
+          <span>$${invoice.amount.toFixed(2)}</span>
+        </div>
+        <div class="p2-invoice-line" style="margin-top:6px;border-top:1px solid #F0F8F0;padding-top:6px">
+          <span style="font-weight:700">Date</span>
+          <span>${new Date(invoice.date).toLocaleDateString()} @ ${invoice.time}</span>
+        </div>
+      </div>
+      
+      <div class="p2-invoice-section">
+        <div class="p2-invoice-line">
+          <span>Subtotal</span>
+          <span>$${invoice.amount.toFixed(2)}</span>
+        </div>
+        <div class="p2-amount-due">
+          Total Due: $${invoice.amount.toFixed(2)}
+        </div>
+      </div>
+      
+      <div class="p2-invoice-section">
+        <div class="p2-invoice-section-title">Payment Due</div>
+        <div class="p2-invoice-section-content">
+          ${new Date(invoice.dueDate).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})}
+        </div>
+      </div>
+    </div>
+    
+    <div class="p2-actions">
+      ${invoice.status !== 'paid' ? `
+        <button class="p2-action-btn primary" onclick="p2OpenPaymentModal('${invoiceId}')">💳 Pay Online</button>
+        <button class="p2-action-btn" onclick="p2OpenPaymentMethodModal('${invoiceId}')">💰 Received In Person</button>
+        <button class="p2-action-btn" onclick="p2ResendInvoice('${invoiceId}')">📧 Resend</button>
+      ` : `
+        <button class="p2-action-btn" onclick="p2ResendInvoice('${invoiceId}')">📧 Resend Receipt</button>
+      `}
+    </div>
+  `;
+  
+  p2RenderInvoices();
+}
+
+function p2ProcessPayment(invoiceId) {
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  // Create payment
+  const paymentId = 'PAY-' + Math.floor(Math.random() * 1000000);
+  const payment = {
+    id: paymentId,
+    invoiceId: invoiceId,
+    bookingId: invoice.bookingId,
+    amount: invoice.amount,
+    method: invoice.paymentMethod || 'online_card',
+    createdAt: new Date().toISOString(),
+    status: 'completed'
+  };
+  
+  p2Payments.push(payment);
+  
+  // Create receipt
+  const receiptId = 'REC-' + Math.floor(Math.random() * 1000000);
+  const receipt = {
+    id: receiptId,
+    paymentId: paymentId,
+    invoiceId: invoiceId,
+    bookingId: invoice.bookingId,
+    amountPaid: invoice.amount,
+    paymentMethod: invoice.paymentMethod || 'online_card',
+    serviceName: invoice.serviceName,
+    serviceIcon: invoice.serviceIcon,
+    customerName: invoice.customerName,
+    customerEmail: invoice.customerEmail,
+    customerPhone: invoice.customerPhone,
+    createdAt: new Date().toISOString(),
+    delivery: {
+      email: { sent: true, sentAt: new Date().toISOString() },
+      sms: { sent: true, sentAt: new Date().toISOString() }
+    }
+  };
+  
+  p2Receipts.push(receipt);
+  
+  // Update invoice status
+  invoice.status = 'paid';
+  
+  // Update booking with payment info
+  const booking = bookings.find(b => b.id === invoice.bookingId);
+  if (booking) {
+    booking.paymentReceived = true;
+    booking.paymentMethod = invoice.paymentMethod || 'online_card';
+    booking.paymentId = paymentId;
+    localStorage.setItem(booking.id, JSON.stringify(booking));
+  }
+  
+  // Save
+  localStorage.setItem('p2_invoices', JSON.stringify(p2Invoices));
+  localStorage.setItem('p2_payments', JSON.stringify(p2Payments));
+  localStorage.setItem('p2_receipts', JSON.stringify(p2Receipts));
+  
+  console.log('✅ Payment processed:', paymentId);
+  console.log('✅ Receipt generated:', receiptId);
+  console.log('📧 [EmailService] Receipt sent to:', invoice.customerEmail);
+  console.log('📱 [SMSService] Receipt SMS sent to:', invoice.customerPhone);
+  
+  alert('✅ Payment processed! Receipt generated and sent to customer.');
+  p2ShowInvoice(invoiceId);
+}
+
+// ===== PAYMENT FLOW: ONLINE PAYMENT (Customer) =====
+function p2OpenPaymentModal(invoiceId) {
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  document.getElementById('p2-payment-modal').style.display = 'flex';
+  
+  // Show invoice summary
+  document.getElementById('p2-payment-invoice-summary').innerHTML = `
+    <div style="margin-bottom:8px">
+      <div style="font-size:11px;color:#5A7A5A">Invoice</div>
+      <div style="font-size:14px;font-weight:700;color:#1A2B1A">${invoice.serviceName}</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:#1A2B1A;border-top:1px solid #CDDECA;padding-top:8px">
+      <span>Amount Due</span>
+      <span style="font-weight:700">$${invoice.amount.toFixed(2)}</span>
+    </div>
+  `;
+  
+  document.getElementById('p2-payment-amount').textContent = invoice.amount.toFixed(2);
+  document.getElementById('p2-venmo-amount').textContent = invoice.amount.toFixed(2);
+  document.getElementById('p2-venmo-ref').textContent = invoice.id;
+}
+
+function p2ClosePaymentModal() {
+  document.getElementById('p2-payment-modal').style.display = 'none';
+  document.getElementById('p2-payment-form').style.display = 'none';
+  document.getElementById('p2-venmo-info').style.display = 'none';
+}
+
+function p2SelectPaymentMethod(method) {
+  document.getElementById('p2-payment-form').style.display = method === 'online_card' ? 'block' : 'none';
+  document.getElementById('p2-venmo-info').style.display = method === 'venmo' ? 'block' : 'none';
+}
+
+function p2ProcessOnlinePayment() {
+  const invoiceId = p2SelectedInvoice;
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  invoice.paymentMethod = 'Online Card';
+  p2ProcessPayment(invoiceId);
+  p2ClosePaymentModal();
+}
+
+function p2ConfirmVenmoPayment() {
+  const invoiceId = p2SelectedInvoice;
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  invoice.paymentMethod = 'Venmo';
+  p2ProcessPayment(invoiceId);
+  p2ClosePaymentModal();
+}
+
+// ===== PAYMENT FLOW: IN-PERSON PAYMENT (Ricardo) =====
+function p2OpenPaymentMethodModal(invoiceId) {
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  document.getElementById('p2-payment-method-modal').style.display = 'flex';
+  document.getElementById('p2-method-details').innerHTML = `
+    <div style="font-size:12px;color:#5A7A5A;margin-bottom:4px">Customer: <strong>${invoice.customerName}</strong></div>
+    <div style="font-size:16px;font-weight:700;color:#2A7A2A">$${invoice.amount.toFixed(2)}</div>
+  `;
+}
+
+function p2ClosePaymentMethodModal() {
+  document.getElementById('p2-payment-method-modal').style.display = 'none';
+}
+
+function p2CompletePaymentWithMethod(method) {
+  const invoiceId = p2SelectedInvoice;
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  const methodMap = {
+    'cash': 'Cash',
+    'card': 'Physical Card',
+    'venmo': 'Venmo'
+  };
+  
+  invoice.paymentMethod = methodMap[method];
+  p2ProcessPayment(invoiceId);
+  p2ClosePaymentMethodModal();
+}
+
+function p2ResendInvoice(invoiceId) {
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (invoice) {
+    console.log('📧 [EmailService] Invoice resent to:', invoice.customerEmail);
+    console.log('📱 [SMSService] Invoice resent to:', invoice.customerPhone);
+    alert('✅ Invoice resent to ' + invoice.customerEmail);
+  }
+}
+
+function p2MarkPaid(invoiceId) {
+  p2OpenPaymentMethodModal(invoiceId);
+}
+
+function p2RenderPayments() {
+  const paymentsList = document.getElementById('p2-payments-list');
+  const receiptDetail = document.getElementById('p2-receipt-detail');
+  
+  if (p2Payments.length === 0) {
+    paymentsList.innerHTML = '<div class="p2-empty">No payments yet</div>';
+    return;
+  }
+  
+  paymentsList.innerHTML = p2Payments.map(pmt => {
+    const invoice = p2Invoices.find(i => i.id === pmt.invoiceId);
+    return `
+      <button class="p2-list-item ${p2SelectedPayment === pmt.id ? 'selected' : ''}" onclick="p2ShowReceipt('${pmt.id}')">
+        <div class="p2-list-item-primary">$${pmt.amount.toFixed(2)} Received</div>
+        <div class="p2-list-item-secondary">${invoice?.customerName || 'Unknown'}</div>
+        <div class="p2-list-item-secondary">${new Date(pmt.createdAt).toLocaleDateString()}</div>
+      </button>
+    `;
+  }).join('');
+}
+
+function p2ShowReceipt(paymentId) {
+  p2SelectedPayment = paymentId;
+  const payment = p2Payments.find(p => p.id === paymentId);
+  const receipt = p2Receipts.find(r => r.paymentId === paymentId);
+  const invoice = p2Invoices.find(i => i.id === payment.invoiceId);
+  
+  if (!receipt) return;
+  
+  const detailDiv = document.getElementById('p2-receipt-detail');
+  
+  const methodIcon = {
+    'Online Card': '💳',
+    'Physical Card': '💳',
+    'Cash': '💰',
+    'Venmo': '📱'
+  };
+  
+  const methodDisplay = methodIcon[receipt.paymentMethod] || '💳';
+  
+  detailDiv.innerHTML = `
+    <div class="p2-receipt-display">
+      <div class="p2-receipt-icon">✓</div>
+      <div class="p2-receipt-title">Payment Received</div>
+      <div class="p2-receipt-number">Receipt #${receipt.id}</div>
+      
+      <div class="p2-receipt-section">
+        <div class="p2-receipt-amount">$${receipt.amountPaid.toFixed(2)}</div>
+        <div class="p2-receipt-service">${receipt.serviceIcon} ${receipt.serviceName}</div>
+        <div class="p2-receipt-date">${new Date(receipt.createdAt).toLocaleDateString()}</div>
+        <div style="font-size:11px;color:#5A7A5A;margin-top:8px">Paid via: ${methodDisplay} ${receipt.paymentMethod}</div>
+      </div>
+      
+      <div class="p2-receipt-review">
+        <div class="p2-receipt-review-title">⭐ Share Your Experience</div>
+        <p style="font-size:11px;color:#1A2B1A;margin-bottom:8px">Your honest review helps us serve better!</p>
+        <a href="https://www.google.com/search?q=arbol+de+fuego+services" target="_blank" class="p2-receipt-review-link">Leave a Google Review</a>
+      </div>
+      
+      <div class="p2-delivery-status">
+        <div style="text-align:center">
+          <div class="p2-delivery-icon ${receipt.delivery.email.sent ? 'sent' : 'unsent'}">✓</div>
+          <div style="font-size:10px;margin-top:4px">Email</div>
+        </div>
+        <div style="text-align:center">
+          <div class="p2-delivery-icon ${receipt.delivery.sms.sent ? 'sent' : 'unsent'}">✓</div>
+          <div style="font-size:10px;margin-top:4px">SMS</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  p2RenderPayments();
+}
+
+function p2RenderCalendar() {
+  const calDiv = document.getElementById('phase2-calendar');
+  if (!calDiv) return;
+  
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  let html = '';
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  dayNames.forEach(d => {
+    html += `<div style="font-size:10px;font-weight:700;color:#8AAA8A;text-align:center;padding:4px">${d}</div>`;
+  });
+  
+  for (let i = 0; i < firstDay; i++) {
+    html += '<div style="padding:4px"></div>';
+  }
+  
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    const dayBookings = bookings.filter(b => b.date === dateStr);
+    const hasBooking = dayBookings.length > 0;
+    
+    html += `
+      <div style="padding:4px;border-radius:6px;background:${hasBooking ? 'rgba(42,122,42,0.2)' : '#1A2B1A'};border:1px solid #2A5A2A;text-align:center;font-size:11px;color:#E2E8F0;font-weight:600;cursor:pointer" title="${hasBooking ? dayBookings.length + ' booking(s)' : 'No bookings'}">
+        ${d}${hasBooking ? '<div style="font-size:8px;color:#A5D6A7">●</div>' : ''}
+      </div>
+    `;
+  }
+  
+  calDiv.innerHTML = html;
+}
+
+function p2LoadFromStorage() {
+  const invs = localStorage.getItem('p2_invoices');
+  const pmts = localStorage.getItem('p2_payments');
+  const recs = localStorage.getItem('p2_receipts');
+  
+  if (invs) p2Invoices = JSON.parse(invs);
+  if (pmts) p2Payments = JSON.parse(pmts);
+  if (recs) p2Receipts = JSON.parse(recs);
+}
+
+// Load on startup
+p2LoadFromStorage();
+console.log('✅ Phase 2 system initialized');
 </script>
 </body>
 </html>
