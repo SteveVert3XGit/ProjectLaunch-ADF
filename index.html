@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="theme-color" content="#143A14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Arbol De Fuego</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+    body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:#1A2B1A;background:#F4F8F2;line-height:1.6}
+    button,input,select,textarea{font-family:inherit;font-size:16px;-webkit-appearance:none;appearance:none}
+    input,select,textarea{padding:12px;border-radius:8px;border:1.5px solid #CDDECA}
+    input:focus,select:focus,textarea:focus{outline:0;border-color:#2A7A2A;box-shadow:0 0 0 3px rgba(42,122,42,.1)}
+    
+    /* Sticky header - minimal height on mobile */
+    .switcher{position:fixed;top:0;left:0;right:0;z-index:9998;display:flex;align-items:center;justify-content:space-between;background:#0D1117;padding:10px;border-bottom:2px solid #E8722A;min-height:48px;gap:6px;width:100%}
+    .switcher-left{display:flex;align-items:center;gap:6px;color:#A5D6A7;font-size:11px;font-weight:700}
+    .switcher-btns{display:flex;gap:6px}
+    .btn-switch{padding:8px 12px;border-radius:6px;border:1px solid #2A5A2A;font-size:11px;font-weight:700;cursor:pointer;background:0;color:#8AAA8A;min-height:44px;min-width:44px;touch-action:manipulation}
+    .btn-switch.active{background:#E8722A;color:white;border:none}
+    
+    body{padding-top:48px}
+    #site-view{display:block}
+    #admin-view{display:none;flex-direction:column;min-height:calc(100vh - 48px)}
+    #admin-view.show{display:flex}
+    
+    /* CUSTOMER SITE - Mobile First */
+    .s-nav{position:sticky;top:48px;z-index:99;background:rgba(244,248,242,.95);border-bottom:1px solid #CDDECA;min-height:56px;display:flex;align-items:center;padding:8px 12px;width:100%}
+    .s-nav-inner{max-width:100%;display:flex;align-items:center;gap:8px;width:100%}
+    .s-logo{display:flex;align-items:center;gap:6px;flex:1}
+    .s-logo-name{font-family:'DM Serif Display',Georgia,serif;font-size:14px;color:#1A2B1A}
+    .s-logo-sub{font-size:8px;color:#5A8A5A;letter-spacing:.08em;text-transform:uppercase}
+    .s-nav-links{display:none}
+    .s-cta{background:#E8722A;color:white;border:none;border-radius:6px;padding:9px 12px;font-size:11px;font-weight:700;cursor:pointer;min-height:44px;min-width:44px}
+    
+    .s-hero{background:linear-gradient(148deg,#143A14 0%,#1F5C1F 50%,#2A7A2A 100%);padding:28px 14px 36px}
+    .s-hero h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(20px,5vw,40px);color:white;line-height:1.15;margin-bottom:10px}
+    .s-hero h1 em{color:#F5A623;font-style:normal}
+    .s-hero-sub{font-size:13px;color:rgba(255,255,255,.85);line-height:1.6;margin-bottom:18px}
+    .s-hero-ctas{display:flex;flex-direction:column;gap:9px}
+    .s-hero-ctas button{width:100%;padding:13px 16px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;min-height:48px}
+    .s-hero-btn-p{background:#E8722A;color:white}
+    .s-hero-btn-s{background:rgba(255,255,255,.12);color:white;border:1.5px solid rgba(255,255,255,.4)}
+    
+    .s-section{max-width:100%;padding:28px 14px}
+    .s-section.light{background:#F4F8F2}
+    .s-section.white{background:white}
+    .s-title{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(18px,4vw,28px);color:#1A2B1A;margin-bottom:8px}
+    .s-sub{font-size:13px;color:#4A6A4A;margin-bottom:14px}
+    
+    .s-svc-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px}
+    .s-svc-card{background:white;border:1.5px solid #DCEADC;border-radius:12px;padding:14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;active:opacity(.9)}
+    .s-svc-icon{font-size:22px;margin-bottom:6px;grid-column:1}
+    .s-svc-name{font-size:13px;font-weight:700;color:#1A2B1A;margin-bottom:4px;grid-column:1}
+    .s-svc-desc{font-size:11px;color:#4A6A4A;grid-column:1}
+    .s-svc-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;grid-column:2;grid-row:1/4}
+    .s-svc-price{font-size:16px;font-weight:800;color:#2A7A2A}
+    .s-svc-book{background:#E8722A;color:white;border:none;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer;min-height:36px;width:auto;whitespace:nowrap}
+    .s-svc-book:active{background:#CF6020}
+    
+    .s-cta-banner{background:linear-gradient(135deg,#E8722A 0%,#CF6020 100%);padding:28px 14px;text-align:center}
+    .s-cta-banner h2{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(16px,3.5vw,24px);color:white;margin-bottom:8px}
+    .s-cta-banner p{font-size:12px;color:rgba(255,255,255,.85);margin-bottom:14px}
+    .s-cta-banner button{width:100%;background:white;color:#CF6020;border:none;border-radius:8px;padding:13px 16px;font-size:13px;font-weight:800;cursor:pointer;min-height:48px}
+    
+    .s-footer{background:#101E10;padding:24px 14px}
+    .s-footer-grid{display:grid;grid-template-columns:1fr;gap:16px}
+    .s-footer-brand{font-size:12px;color:rgba(255,255,255,.65);line-height:1.6}
+    .s-footer-phone{font-size:14px;font-weight:700;color:#F5A623;margin-top:8px}
+    .s-ft-h{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px}
+    .s-ft-line{font-size:12px;color:rgba(255,255,255,.65);line-height:1.8;text-decoration:none}
+    
+    /* BOOKING MODAL - Mobile Bottom Sheet */
+    .bk-overlay{display:none;position:fixed;inset:0;background:rgba(10,26,10,.75);backdrop-filter:blur(4px);z-index:9999;align-items:flex-end;justify-content:center;padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch;width:100%;height:100%}
+    .bk-overlay.open{display:flex}
+    .bk-modal{background:#F4F8F2;border-radius:20px 20px 0 0;width:100%;max-width:600px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -4px 20px rgba(0,0,0,.3)}
+    
+    .bk-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:white;border-bottom:1px solid #DCEADC;min-height:48px}
+    .bk-header-title{font-family:'DM Serif Display',Georgia,serif;font-size:14px;color:#1A2B1A}
+    .bk-close{background:0;border:0;cursor:pointer;font-size:18px;color:#7A9A7A;padding:8px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+    
+    .bk-progress{background:white;border-bottom:1px solid #E8F0E8;padding:8px 14px;display:none}
+    .bk-progress.show{display:block}
+    .bk-prog-track{background:#E8F0E8;border-radius:99px;height:4px}
+    .bk-prog-fill{height:100%;background:linear-gradient(90deg,#2A7A2A,#4CAF50);width:10%;transition:width .3s}
+    
+    .bk-body{flex:1;overflow-y:auto;padding:14px;-webkit-overflow-scrolling:touch}
+    .bk-step{display:none}
+    .bk-step.show{display:block}
+    .bk-step h3{font-family:'DM Serif Display',Georgia,serif;font-size:16px;color:#1A2B1A;margin-bottom:6px}
+    .bk-step-sub{font-size:12px;color:#5A7A5A;margin-bottom:14px}
+    
+    .bk-field{margin-bottom:12px}
+    .bk-field-label{display:block;font-size:11px;font-weight:600;color:#2A4A2A;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+    .bk-field-input{width:100%;font-size:16px;padding:12px;background:white;border:1.5px solid #CDDECA;border-radius:8px;color:#1A2B1A;outline:0;font-family:inherit;min-height:44px}
+    .bk-field-input:focus{border-color:#2A7A2A;box-shadow:0 0 0 3px rgba(42,122,42,.1)}
+    
+    .bk-svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .bk-svc-opt{background:white;border:2px solid #DCEADC;border-radius:10px;padding:12px;cursor:pointer;display:flex;flex-direction:column;gap:4px;position:relative;min-height:110px}
+    .bk-svc-opt.selected{border-color:#2A7A2A;background:#F0FAF0}
+    .bk-svc-icon{font-size:20px}
+    .bk-svc-name{font-size:11px;font-weight:700;color:#1A2B1A;line-height:1.3}
+    .bk-svc-price{font-size:14px;font-weight:800;color:#2A7A2A}
+    
+    .bk-cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px}
+    .bk-cal-nav button{background:0;border:0;cursor:pointer;color:#2A7A2A;font-size:16px;padding:4px;min-width:36px;min-height:36px}
+    .bk-cal-month{font-family:'DM Serif Display',Georgia,serif;font-size:13px;color:#1A2B1A;flex:1;text-align:center}
+    .bk-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:12px}
+    .bk-cal-day{padding:4px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:500;color:#1A2B1A;text-align:center;min-height:32px;display:flex;align-items:center;justify-content:center;background:white;border:1px solid #E8F0E8}
+    .bk-cal-day.disabled{color:#D0D8D0;cursor:not-allowed;background:#F5F5F5}
+    .bk-cal-day.selected{background:#2A7A2A;color:white;font-weight:700}
+    
+    .bk-slots-label{font-size:11px;font-weight:600;color:#2A4A2A;margin-bottom:8px;text-transform:uppercase}
+    .bk-slots-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+    .bk-slot{background:white;border:1.5px solid #CDDECA;border-radius:6px;padding:9px;text-align:center;font-size:11px;font-weight:600;cursor:pointer;color:#2A4A2A;min-height:40px;display:flex;align-items:center;justify-content:center}
+    .bk-slot.taken{background:#F5F5F5;color:#B0B8B0;cursor:not-allowed;text-decoration:line-through}
+    .bk-slot.selected{background:#2A7A2A;color:white;border-color:#2A7A2A}
+    
+    .bk-summary{background:white;border:1.5px solid #DCEADC;border-radius:10px;padding:12px;margin-top:10px}
+    .bk-sum-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #F0F8F0;font-size:12px}
+    .bk-sum-row:last-child{border-bottom:none}
+    .bk-sum-label{color:#5A7A5A;font-weight:500}
+    .bk-sum-val{color:#1A2B1A;font-weight:700;text-align:right}
+    .bk-sum-price{font-size:16px;color:#2A7A2A}
+    
+    .bk-confirm{text-align:center;padding:14px 0}
+    .bk-confirm-icon{width:52px;height:52px;background:#E8F5E9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 10px;color:#2A7A2A;font-weight:700}
+    .bk-confirm-title{font-family:'DM Serif Display',Georgia,serif;font-size:20px;color:#1A2B1A;margin-bottom:6px}
+    .bk-confirm-sub{font-size:12px;color:#5A7A5A;line-height:1.6;margin-bottom:14px}
+    .bk-confirm-card{background:white;border:1.5px solid #DCEADC;border-radius:10px;padding:12px;text-align:left;margin-bottom:12px}
+    .bk-confirm-ref{font-size:16px;font-weight:800;color:#2A7A2A;margin:4px 0 8px}
+    .bk-confirm-detail{font-size:11px;color:#5A7A5A;margin-bottom:3px}
+    .bk-confirm-close{background:#2A7A2A;color:white;border:none;border-radius:8px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;width:100%;min-height:48px}
+    
+    .bk-footer{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:white;border-top:1px solid #DCEADC;gap:8px;flex-wrap:wrap;min-height:48px}
+    .bk-footer.hidden{display:none}
+    .bk-step-counter{font-size:11px;color:#8AAA8A;font-weight:600}
+    .bk-footer-btns{display:flex;gap:6px;flex:1}
+    .bk-btn{border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;min-height:44px;flex:1}
+    .bk-btn-back{background:0;border:1.5px solid #CDDECA;color:#2A4A2A;display:none}
+    .bk-btn-next{background:#E8722A;color:white}
+    .bk-btn-next:disabled{background:#B0C8B0;cursor:not-allowed}
+    
+    /* ADMIN DASHBOARD - Mobile First */
+    .admin-sidebar{display:none}
+    .admin-main{flex:1;padding:12px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+    .admin-title{font-family:'DM Serif Display',Georgia,serif;font-size:20px;color:#E2E8F0;line-height:1;margin-bottom:4px}
+    .admin-refresh{background:#1A3A1A;color:#A5D6A7;border:1px solid #2A5A2A;border-radius:6px;padding:9px 11px;font-size:12px;font-weight:700;cursor:pointer;min-height:44px;min-width:44px;position:absolute;top:12px;right:12px}
+    
+    /* Stats Dashboard */
+    .admin-stats-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;cursor:pointer}
+    .admin-stats-toggle{background:0;border:0;cursor:pointer;color:#A5D6A7;font-size:18px;padding:8px;min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center}
+    .admin-stats-box{background:#0F1B0F;border:1px solid #1E2D1E;border-radius:10px;overflow:hidden;transition:all .3s}
+    .admin-stats-box.collapsed{max-height:0;overflow:hidden;border:none}
+    .admin-stats-content{padding:14px}
+    .admin-period-btns{display:flex;gap:8px;margin-bottom:12px}
+    .admin-period-btn{flex:1;background:#161D27;border:1px solid #1E2D3E;color:#8AAA8A;border-radius:6px;padding:8px;font-size:11px;font-weight:700;cursor:pointer;min-height:40px}
+    .admin-period-btn.active{background:#2A7A2A;color:white;border-color:#2A7A2A}
+    
+    .admin-stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;border-bottom:1px solid #1A2B1A;padding-bottom:12px}
+    .admin-stat-row:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .admin-stat-item{display:flex;flex-direction:column}
+    .admin-stat-label{font-size:10px;color:#4A6A4A;text-transform:uppercase;font-weight:600;margin-bottom:3px}
+    .admin-stat-value{font-family:'DM Serif Display',Georgia,serif;font-size:18px;color:#A5D6A7;font-weight:700}
+    .admin-stat-value.revenue{color:#F5A623}
+    
+    .admin-service-stats{font-size:11px;color:#8AAA8A;line-height:1.6}
+    .admin-service-stats strong{color:#C8D8C8}
+    
+    /* Jobs List */
+    .admin-jobs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+    .admin-toggle-completed{background:#161D27;border:1px solid #1E2D3E;color:#8AAA8A;border-radius:6px;padding:6px 10px;font-size:10px;font-weight:700;cursor:pointer;min-height:40px;white-space:nowrap}
+    .admin-toggle-completed.show{background:#1A3A1A;border-color:#2A5A2A;color:#A5D6A7}
+    .admin-list{background:#0F1B0F;border:1px solid #1E2D1E;border-radius:10px;overflow:hidden;flex:1;display:flex;flex-direction:column;min-height:200px}
+    .admin-empty{padding:24px;text-align:center;color:#4A6A4A;font-size:12px}
+    
+    .admin-date-group{border-bottom:1px solid #1A2B1A}
+    .admin-date-header{background:#0A1510;padding:10px 12px;font-size:12px;font-weight:700;color:#A5D6A7;position:sticky;top:0;z-index:10}
+    
+    .admin-item{display:flex;justify-content:space-between;padding:11px 12px;border-bottom:1px solid #1A2B1A;background:0;border:none;width:100%;text-align:left;font-family:inherit;cursor:pointer;min-height:56px;align-items:flex-start}
+    .admin-item:active{background:#0A1510}
+    .admin-item.active{background:#111F11;border-left:3px solid #2A7A2A}
+    .admin-item-info{flex:1;min-width:0}
+    .admin-item-time{font-size:11px;font-weight:700;color:#A5D6A7}
+    .admin-item-name{font-size:12px;font-weight:700;color:#E2E8F0;margin-top:2px}
+    .admin-item-service{font-size:10px;color:#8AAA8A;margin-top:2px}
+    .admin-item-location{font-size:10px;color:#4A6A4A;margin-top:1px}
+    .admin-item-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+    .admin-status{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:3px 7px;border-radius:12px}
+    
+    .admin-detail-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:5000;align-items:center;justify-content:center;padding:20px}
+    .admin-detail-modal.show{display:flex}
+    .admin-detail-modal-content{background:#0F1B0F;border:1px solid #1E2D1E;border-radius:12px;padding:20px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 10px 40px rgba(0,0,0,0.8)}
+    .admin-detail-modal-close{position:absolute;top:15px;right:15px;background:0;border:0;color:#4A6A4A;cursor:pointer;font-size:24px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center}
+    
+    /* Invoice Modal */
+    .invoice-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:5001;align-items:center;justify-content:center;padding:20px}
+    .invoice-modal.show{display:flex}
+    .invoice-modal-content{background:#fff;border-radius:12px;padding:20px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 10px 40px rgba(0,0,0,0.8)}
+    .invoice-modal-close{position:absolute;top:15px;right:15px;background:0;border:0;cursor:pointer;font-size:24px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;color:#999}
+    .invoice-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+    .invoice-btn{flex:1;min-width:140px;padding:12px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;min-height:44px}
+    .invoice-btn-sms{background:#2A7A2A;color:white}
+    .invoice-btn-email{background:#0066cc;color:white}
+    .invoice-btn-close{background:#f0f0f0;color:#666}
+    
+    /* Hide bottom detail panel */
+    .admin-detail{display:none !important}
+    .admin-detail.show{display:block}
+    .admin-detail-close{position:absolute;top:10px;right:10px;background:0;border:0;color:#4A6A4A;cursor:pointer;font-size:18px;min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center}
+    .admin-detail-name{font-family:'DM Serif Display',Georgia,serif;font-size:16px;color:#E2E8F0;margin-bottom:10px;padding-right:30px}
+    
+    .admin-info-section{margin-bottom:14px}
+    .admin-info-section-title{font-size:10px;font-weight:700;color:#4A6A4A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+    .admin-info-row{display:flex;gap:8px;align-items:baseline;margin-bottom:7px;font-size:11px}
+    .admin-info-label{font-weight:700;color:#4A6A4A;min-width:52px;flex-shrink:0;text-transform:uppercase;letter-spacing:.04em}
+    .admin-info-val{color:#C8D8C8;word-break:break-word;flex:1}
+    
+    .admin-notes-area{background:#0A1510;border:1px solid #1E2D1E;border-radius:8px;padding:10px;font-size:11px;color:#C8D8C8;line-height:1.5;margin-bottom:8px;min-height:60px;word-break:break-word}
+    .admin-notes-empty{color:#4A6A4A;font-style:italic}
+    .admin-textarea{width:100%;background:#0A1510;border:1px solid #1E2D1E;border-radius:8px;padding:10px;font-size:11px;color:#C8D8C8;font-family:inherit;resize:vertical;min-height:70px;outline:0;margin-bottom:8px}
+    .admin-textarea:focus{border-color:#2A7A2A}
+    
+    .admin-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+    .admin-action-btn{flex:1;border:none;border-radius:8px;padding:10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;min-height:40px}
+    .admin-action-complete{background:#0F3A1A;color:#34D399;border:1px solid #1A5A2A}
+    .admin-action-cancel{background:#3A1010;color:#F87171;border:1px solid #5A1A1A}
+    .admin-action-save{background:#2A5A2A;color:#A5D6A7;border:1px solid #3A7A3A}
+    .admin-action-cancel-edit{background:#161D27;color:#8AAA8A;border:1px solid #1E2D3E}
+    
+    /* Tablet and up */
+    @media(min-width:640px){
+      .s-svc-grid{grid-template-columns:repeat(2,1fr)}
+      .bk-slots-grid{grid-template-columns:repeat(4,1fr)}
+      .admin-list{flex:0 0 auto;max-height:400px}
+    }
+    
+    @media(min-width:768px){
+      .s-nav-links{display:flex;gap:16px;list-style:none;margin:0 auto 0 0}
+      .s-nav-links a{color:#2A4A2A;font-size:13px;font-weight:500}
+      .s-svc-grid{grid-template-columns:repeat(3,1fr)}
+      .s-footer-grid{grid-template-columns:repeat(3,1fr);gap:20px}
+      
+      .admin-sidebar{display:flex;width:180px;background:#0D1117;border-right:1px solid #1E2D1E;flex-direction:column;padding:14px 0;flex-shrink:0}
+      .admin-content{flex-direction:row}
+      .admin-detail{flex:0 0 260px;max-height:none;overflow-y:auto}
+      #admin-view{flex-direction:row}
+    }
+    
+    @media(min-width:1024px){
+      .s-hero{padding:40px 32px}
+      .s-section{padding:40px 32px}
+      .bk-modal{border-radius:16px;margin-bottom:0}
+    }
+
+  /* ===== PHASE 2: TAB STYLES ===== */
+  .admin-tab-nav { background:#0D1117; padding:12px; border-bottom:1px solid #1E2D1E; display:flex; gap:8px; overflow-x:auto; }
+  .admin-tab-btn { background:0; border:1px solid #2A5A2A; color:#8AAA8A; padding:8px 14px; border-radius:6px; cursor:pointer; font-size:11px; font-weight:700; white-space:nowrap; min-height:40px; transition:all 0.2s; }
+  .admin-tab-btn.active { background:rgba(42, 122, 42, 0.3); color:#A5D6A7; border-color:#2A7A2A; }
+  .admin-tab-content { display:none; flex-direction:column; overflow-y:auto; }
+  .admin-tab-content.active { display:flex; }
+  .p2-split-view { display:grid; grid-template-columns:1fr 1fr; gap:12px; height:100%; }
+  .p2-split-left { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
+  .p2-split-right { background:#0F1B0F; border:1px solid #1E2D1E; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; padding:14px; overflow-y:auto; }
+  .p2-list { flex:1; overflow-y:auto; }
+  .p2-list-item { padding:12px; border-bottom:1px solid #1A2B1A; cursor:pointer; background:0; border:none; width:100%; text-align:left; font-family:inherit; color:#E2E8F0; transition:all 0.18s; }
+  .p2-list-item:hover { background:rgba(42, 122, 42, 0.15); }
+  .p2-list-item.selected { background:#0A2810; border-left:3px solid #2A7A2A; padding-left:11px; }
+  .p2-list-item-primary { font-size:12px; font-weight:700; margin-bottom:2px; }
+  .p2-list-item-secondary { font-size:11px; color:#8AAA8A; }
+  .p2-empty { padding:20px; text-align:center; color:#5A7A5A; font-size:12px; }
+  .p2-header { padding:12px 14px; border-bottom:1px solid #1A2B1A; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+  .p2-header-title { font-size:12px; font-weight:700; color:#E2E8F0; text-transform:uppercase; }
+  .p2-invoice-display { background:white; padding:20px; border-radius:8px; margin-bottom:14px; color:#1A2B1A; }
+  .p2-invoice-header { border-bottom:2px solid #E8722A; padding-bottom:12px; margin-bottom:14px; }
+  .p2-invoice-business { font-size:16px; font-weight:700; color:#1B5E20; margin-bottom:4px; }
+  .p2-invoice-number { font-size:11px; color:#5A7A5A; font-family:monospace; }
+  .p2-invoice-section { margin-bottom:14px; }
+  .p2-invoice-section-title { font-size:11px; font-weight:700; color:#1B5E20; text-transform:uppercase; margin-bottom:6px; }
+  .p2-invoice-line { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #F0F8F0; }
+  .p2-invoice-line:last-child { border-bottom:none; }
+  .p2-amount-due { font-size:18px; font-weight:800; color:#2A7A2A; text-align:right; padding-top:12px; border-top:2px solid #E8722A; }
+  .p2-receipt-display { background:white; padding:20px; border-radius:8px; margin-bottom:14px; color:#1A2B1A; text-align:center; }
+  .p2-receipt-icon { font-size:32px; margin-bottom:10px; }
+  .p2-receipt-title { font-size:16px; font-weight:700; color:#2A7A2A; margin-bottom:4px; }
+  .p2-receipt-number { font-size:13px; font-weight:700; color:#1B5E20; font-family:monospace; margin-bottom:14px; }
+  .p2-receipt-section { text-align:left; margin-bottom:12px; padding:12px; background:#F4F8F2; border-radius:6px; }
+  .p2-receipt-review { background:#FFF3E0; border-left:4px solid #E65100; padding:12px; border-radius:6px; margin-bottom:12px; text-align:left; }
+  .p2-receipt-review-title { font-size:12px; font-weight:700; color:#E65100; margin-bottom:6px; }
+  .p2-receipt-review-link { display:inline-block; background:#E65100; color:white; padding:7px 12px; border-radius:6px; text-decoration:none; font-size:11px; font-weight:700; cursor:pointer; }
+  .p2-delivery-status { display:flex; gap:14px; margin-top:12px; justify-content:center; font-size:11px; }
+  .p2-delivery-icon { width:32px; height:32px; border-radius:50%; background:#E8F5E9; display:flex; align-items:center; justify-content:center; color:#2A7A2A; font-weight:700; }
+  .p2-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+  .p2-action-btn { padding:9px 14px; border-radius:6px; border:1px solid #CDDECA; background:#F4F8F2; color:#2A7A2A; font-size:11px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+  .p2-action-btn:hover { background:#2A7A2A; color:white; border-color:#2A7A2A; }
+  .p2-action-btn.primary { background:#2A7A2A; color:white; border-color:#2A7A2A; }
+  @media(max-width:768px) { .p2-split-view { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+<!-- Switcher -->
+<div class="switcher">
+  <div class="switcher-left">📍 ADF Demo</div>
+  <div class="switcher-btns">
+    <button class="btn-switch active" onclick="switchView('site')">🌿 Site</button>
+    <button class="btn-switch" onclick="switchView('admin')">⚙️ Admin</button>
+  </div>
+</div>
+
+<!-- CUSTOMER SITE -->
+<div id="site-view">
+  <nav class="s-nav">
+    <div class="s-nav-inner">
+      <a class="s-logo"><svg width="24" height="24" viewBox="0 0 40 40" fill="none"><rect x="17" y="27" width="6" height="9" rx="1.5" fill="#5C3D1E"/><polygon points="20,4 32,27 8,27" fill="#2A7A2A"/><polygon points="20,10 30,27 10,27" fill="#3DAA3D" opacity="0.45"/><ellipse cx="28" cy="11" rx="5" ry="7" fill="#E8722A"/><ellipse cx="28" cy="9" rx="3" ry="4.5" fill="#F5A623"/><circle cx="28" cy="7" r="1.5" fill="#FFD060"/></svg><div><div class="s-logo-name">Arbol De Fuego</div><div class="s-logo-sub">Services</div></div></a>
+      <ul class="s-nav-links"><li><a href="#services">Services</a></li><li><a href="#about">About</a></li></ul>
+      <button class="s-cta" onclick="openBooking(null)">Book</button>
+    </div>
+  </nav>
+
+  <section class="s-hero">
+    <div style="display:inline-block;background:rgba(232,114,42,.2);color:#FFB87A;border:1px solid rgba(232,114,42,.35);border-radius:16px;padding:4px 10px;font-size:10px;font-weight:600;margin-bottom:10px">📍 Denver Metro</div>
+    <h1>Your Denver Lawn & Sprinkler Expert</h1>
+    <p class="s-hero-sub">Professional irrigation startup, winterization, and lawn care for Aurora, Centennial, Parker & surrounding communities.</p>
+    <div class="s-hero-ctas">
+      <button class="s-hero-btn-p" onclick="openBooking(null)">Book an Appointment</button>
+      <button class="s-hero-btn-s" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">View Services</button>
+    </div>
+  </section>
+
+  <section class="s-section light" id="services">
+    <h2 class="s-title">Services & Pricing</h2>
+    <p class="s-sub">Flat-rate, transparent pricing. No surprises.</p>
+    <div class="s-svc-grid" id="svc-grid"></div>
+  </section>
+
+  <section class="s-section white" id="about">
+    <h2 class="s-title">About Ricardo</h2>
+    <p class="s-sub">Ricardo founded Arbol De Fuego Services to bring honest, quality lawn and sprinkler care to Denver Metro homeowners. With years of hands-on experience, he takes personal pride in every job.</p>
+    <h3 style="font-family:'DM Serif Display',Georgia,serif;font-size:16px;color:#1A2B1A;margin-top:18px;margin-bottom:10px">Service Area</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px" id="area-chips"></div>
+    <div style="background:#E8F5E9;border-radius:10px;padding:12px;border-left:4px solid #2A7A2A">
+      <p style="font-size:11px;color:#1B5E20;font-weight:600;margin-bottom:4px">📞 <span style="font-weight:400">(720) 210-3718</span></p>
+      <p style="font-size:11px;color:#1B5E20;font-weight:600">✉ <span style="font-weight:400">hello@adfservices.com</span></p>
+    </div>
+  </section>
+
+  <section class="s-cta-banner">
+    <h2>Ready to book?</h2>
+    <p>Schedule in under 2 minutes.</p>
+    <button onclick="openBooking(null)">Book Now</button>
+  </section>
+
+  <footer class="s-footer">
+    <div class="s-footer-grid">
+      <div><p class="s-footer-brand">Professional lawn & sprinkler care for Denver Metro homeowners.</p><p class="s-footer-phone">(720) 210-3718</p></div>
+      <div><h4 class="s-ft-h">Hours</h4><p class="s-ft-line">Mon–Sat: 7AM–5:30PM</p><p class="s-ft-line">Sunday: Closed</p></div>
+      <div><h4 class="s-ft-h">Links</h4><a onclick="openBooking(null);return false" href="#" class="s-ft-line" style="cursor:pointer">Book</a><a href="#services" class="s-ft-line">Services</a><a href="#about" class="s-ft-line">About</a></div>
+    </div>
+    <p style="border-top:1px solid rgba(255,255,255,.08);padding-top:12px;font-size:10px;color:rgba(255,255,255,.3);text-align:center">© 2026 Arbol De Fuego Services</p>
+  </footer>
+</div>
+
+
+<!-- ADMIN DASHBOARD WITH PHASE 2 TABS -->
+<div id="admin-view">
+  <!-- TAB NAVIGATION -->
+  <div class="admin-tab-nav">
+    <button class="admin-tab-btn active" onclick="switchAdminTab('bookings')">📋 Bookings</button>
+    <button class="admin-tab-btn" onclick="switchAdminTab('invoices')">📄 Invoices</button>
+    <button class="admin-tab-btn" onclick="switchAdminTab('payments')">💳 Payments</button>
+  </div>
+  
+  <!-- BOOKINGS TAB (PHASE 1) -->
+  <div id="bookings-tab" class="admin-tab-content active" style="flex-direction:column">
+  <div class="admin-main">
+    <div style="display:flex;align-items:center;justify-content:space-between;position:relative;margin-bottom:10px">
+      <h1 class="admin-title">Bookings</h1>
+      <button class="admin-refresh" onclick="loadBookings()">↻</button>
+    </div>
+    
+    <!-- Stats Dashboard -->
+    <div class="admin-stats-box" id="admin-stats-box" style="background:#0F1B0F;border:1px solid #1E2D1E;border-radius:10px;overflow:hidden">
+      <button class="admin-stats-header" onclick="toggleStats()" style="width:100%;background:0;border:0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left;font-family:inherit">
+        <span style="font-size:14px;font-weight:700;color:#E2E8F0">📊 Dashboard</span>
+        <span id="admin-stats-toggle" style="font-size:16px;color:#A5D6A7">▼</span>
+      </button>
+      <div class="admin-stats-content" id="admin-stats-content" style="display:block;padding:14px;border-top:1px solid #1A2B1A">
+        <div class="admin-period-btns">
+          <button class="admin-period-btn active" id="period-week" onclick="setPeriod('week')">This Week</button>
+          <button class="admin-period-btn" id="period-month" onclick="setPeriod('month')">This Month</button>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px">
+        <!-- Column 1: Booking Status -->
+          <div>
+            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter(null);adminRender()" title="Click to see all">
+              <span class="admin-stat-label">Total Bookings</span>
+              <span class="admin-stat-value" id="stat-total">0</span>
+            </div>
+            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter('pending');adminRender()" title="Click to filter">
+              <span class="admin-stat-label">Pending Confirmation</span>
+              <span class="admin-stat-value" id="stat-pending">0</span>
+            </div>
+            <div class="admin-stat-item" style="cursor:pointer;opacity:0.7" onclick="setStatusFilter('confirmed');adminRender()" title="Click to filter">
+              <span class="admin-stat-label">Confirmed</span>
+              <span class="admin-stat-value" id="stat-confirmed">0</span>
+            </div>
+          </div>
+          
+          <!-- Column 2: Revenue & Status -->
+          <div>
+            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter(null);adminRender()" title="Click to see all">
+              <span class="admin-stat-label">Total Revenue</span>
+              <span class="admin-stat-value revenue" id="stat-revenue">$0</span>
+            </div>
+            <div class="admin-stat-item" style="margin-bottom:10px;cursor:pointer;opacity:0.7" onclick="setStatusFilter('pending');adminRender()" title="Click to filter">
+              <span class="admin-stat-label">Services Pending</span>
+              <span class="admin-stat-value" id="stat-pending-svcs">0</span>
+            </div>
+            <div class="admin-stat-item" style="cursor:pointer;opacity:0.7" onclick="setStatusFilter('completed');adminRender()" title="Click to filter">
+              <span class="admin-stat-label">Completed</span>
+              <span class="admin-stat-value" id="stat-completed">0</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- By Service Type -->
+        <div style="border-top:1px solid #1A2B1A;padding-top:12px">
+          <div class="admin-stat-label" style="margin-bottom:8px">By Service Type</div>
+          <div class="admin-service-stats" id="stat-services">-</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Jobs List -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;min-height:0">
+      <div class="admin-jobs-header">
+        <span style="font-size:12px;font-weight:700;color:#E2E8F0">🗓️ Jobs</span>
+      </div>
+      
+      <div class="admin-list" id="admin-list" style="overflow-y:auto"></div>
+    </div>
+    
+    <!-- Detail Panel -->
+    <div class="admin-detail" id="admin-detail"></div>
+  </div>
+  </div>
+  <!-- INVOICES TAB -->
+  <div id="invoices-tab" class="admin-tab-content">
+    <div class="p2-split-view" style="padding:12px">
+      <div class="p2-split-left">
+        <div class="p2-header">
+          <div class="p2-header-title">Invoices</div>
+        </div>
+        <div class="p2-list" id="p2-invoices-list"></div>
+      </div>
+      <div class="p2-split-right" id="p2-invoice-detail">
+        <div style="text-align:center;color:#8AAA8A;padding:20px">Select an invoice to view</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- PAYMENTS & RECEIPTS TAB -->
+  <div id="payments-tab" class="admin-tab-content">
+    <div class="p2-split-view" style="padding:12px">
+      <div class="p2-split-left">
+        <div class="p2-header">
+          <div class="p2-header-title">Payments</div>
+        </div>
+        <div class="p2-list" id="p2-payments-list"></div>
+      </div>
+      <div class="p2-split-right" id="p2-receipt-detail">
+        <div style="text-align:center;color:#8AAA8A;padding:20px">Select a payment to view receipt</div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+<!-- BOOKING DETAIL MODAL -->
+<div class="admin-detail-modal" id="admin-detail-modal">
+  <div class="admin-detail-modal-content" id="admin-detail-modal-content">
+    <button class="admin-detail-modal-close" onclick="selectBooking(null)">✕</button>
+  </div>
+</div>
+
+<!-- INVOICE MODAL -->
+<div class="invoice-modal" id="invoice-modal">
+  <div class="invoice-modal-content">
+    <button class="invoice-modal-close" onclick="closeInvoice()">✕</button>
+    <div id="invoice-display"></div>
+    <input type="hidden" id="invoice-booking-id">
+    <div class="invoice-actions">
+      <button class="invoice-btn invoice-btn-sms" onclick="sendInvoice('sms')">📱 Send via SMS</button>
+      <button class="invoice-btn invoice-btn-email" onclick="sendInvoice('email')">✉️ Send via Email</button>
+      <button class="invoice-btn invoice-btn-close" onclick="closeInvoice()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 2: CUSTOMER PAYMENT PAGE (MOCKED) -->
+<div id="p2-payment-modal" style="display:none;position:fixed;inset:0;background:rgba(10,26,10,0.85);z-index:5000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:12px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:24px;color:#1A2B1A">
+    <button onclick="p2ClosePaymentModal()" style="position:absolute;top:12px;right:12px;background:0;border:0;font-size:20px;cursor:pointer;color:#5A7A5A">✕</button>
+    
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:28px;font-weight:700;color:#2A7A2A;margin-bottom:8px">Arbol De Fuego</div>
+      <div style="font-size:12px;color:#5A7A5A">Online Payment</div>
+    </div>
+    
+    <div id="p2-payment-invoice-summary" style="background:#F4F8F2;padding:16px;border-radius:8px;margin-bottom:20px">
+      <!-- Invoice summary will be inserted here -->
+    </div>
+    
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;color:#1B5E20;text-transform:uppercase;margin-bottom:12px">Select Payment Method</div>
+      <div id="p2-payment-methods" style="display:grid;gap:10px">
+        <button onclick="p2SelectPaymentMethod('online_card')" style="padding:14px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+          💳 Pay with Card (Online)
+        </button>
+        <button onclick="p2SelectPaymentMethod('venmo')" style="padding:14px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+          📱 Venmo
+        </button>
+      </div>
+    </div>
+    
+    <div id="p2-payment-form" style="display:none">
+      <div style="margin-bottom:16px">
+        <label style="display:block;font-size:11px;font-weight:700;color:#1B5E20;text-transform:uppercase;margin-bottom:6px">Card Number</label>
+        <input type="text" placeholder="4242 4242 4242 4242" style="width:100%;padding:12px;border:1.5px solid #CDDECA;border-radius:8px;font-size:14px;font-family:monospace" value="4242 4242 4242 4242" readonly>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#1B5E20;text-transform:uppercase;margin-bottom:6px">Expires</label>
+          <input type="text" placeholder="12/25" style="width:100%;padding:12px;border:1.5px solid #CDDECA;border-radius:8px;font-size:14px" value="12/25" readonly>
+        </div>
+        <div>
+          <label style="display:block;font-size:11px;font-weight:700;color:#1B5E20;text-transform:uppercase;margin-bottom:6px">CVC</label>
+          <input type="text" placeholder="123" style="width:100%;padding:12px;border:1.5px solid #CDDECA;border-radius:8px;font-size:14px" value="123" readonly>
+        </div>
+      </div>
+      <button onclick="p2ProcessOnlinePayment()" style="width:100%;padding:14px;background:#2A7A2A;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='#1B5E20'" onmouseout="this.style.background='#2A7A2A'">
+        Pay $<span id="p2-payment-amount">0.00</span>
+      </button>
+    </div>
+    
+    <div id="p2-venmo-info" style="display:none;background:#FFF3E0;border-left:4px solid #E65100;padding:14px;border-radius:6px">
+      <div style="font-size:12px;font-weight:700;color:#E65100;margin-bottom:8px">📱 Venmo Payment</div>
+      <div style="font-size:12px;color:#1A2B1A;line-height:1.6">
+        Send payment to: <strong>@Ricardo-ArbolDeFuego</strong><br>
+        Amount: $<span id="p2-venmo-amount">0.00</span><br>
+        Reference: <span id="p2-venmo-ref">INV-0000</span>
+      </div>
+      <button onclick="p2ConfirmVenmoPayment()" style="width:100%;padding:10px;margin-top:12px;background:#E65100;color:white;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer">
+        I've sent the payment
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PHASE 2: PAYMENT METHOD SELECTOR (For marking paid in person) -->
+<div id="p2-payment-method-modal" style="display:none;position:fixed;inset:0;background:rgba(10,26,10,0.85);z-index:5001;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:12px;width:100%;max-width:400px;padding:24px;color:#1A2B1A">
+    <button onclick="p2ClosePaymentMethodModal()" style="position:absolute;top:12px;right:12px;background:0;border:0;font-size:20px;cursor:pointer;color:#5A7A5A">✕</button>
+    
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:20px;font-weight:700;color:#2A7A2A">Payment Received</div>
+      <div style="font-size:12px;color:#5A7A5A;margin-top:6px">How did the customer pay?</div>
+    </div>
+    
+    <div id="p2-method-details" style="background:#F4F8F2;padding:14px;border-radius:8px;margin-bottom:20px;text-align:center;font-size:12px;color:#1A2B1A">
+      <!-- Customer and amount details will go here -->
+    </div>
+    
+    <div style="display:grid;gap:10px">
+      <button onclick="p2CompletePaymentWithMethod('cash')" style="padding:12px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+        💰 Cash
+      </button>
+      <button onclick="p2CompletePaymentWithMethod('card')" style="padding:12px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+        💳 Physical Card
+      </button>
+      <button onclick="p2CompletePaymentWithMethod('venmo')" style="padding:12px;border:2px solid #CDDECA;border-radius:8px;background:#F4F8F2;color:#2A7A2A;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.borderColor='#2A7A2A';this.style.background='#E8F5E9'" onmouseout="this.style.borderColor='#CDDECA';this.style.background='#F4F8F2'">
+        📱 Venmo
+      </button>
+      <button onclick="p2ClosePaymentMethodModal()" style="padding:12px;border:2px solid #ddd;border-radius:8px;background:#F5F5F5;color:#666;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#F5F5F5'">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PRICE EDIT MODAL -->
+<div class="bk-overlay" id="price-edit-modal" style="display:none">
+  <div class="bk-modal" style="max-width:300px">
+    <div class="bk-header">
+      <div class="bk-header-title">Edit Booking Price</div>
+      <button class="bk-close" onclick="closePriceEdit()">✕</button>
+    </div>
+    <div class="bk-body" style="padding:20px">
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:11px;font-weight:600;color:#2A4A2A;margin-bottom:6px;text-transform:uppercase">New Price</label>
+        <input type="number" id="price-input" style="width:100%;padding:10px;border:1.5px solid #CDDECA;border-radius:8px;font-size:14px" placeholder="e.g. 125">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="admin-action-btn admin-action-complete" style="flex:1;padding:10px" onclick="savePriceEdit()">Save</button>
+        <button class="admin-action-btn admin-action-cancel-edit" style="flex:1;padding:10px;background:#666;border:none;color:white" onclick="closePriceEdit()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="bk-modal">
+    <div class="bk-header">
+      <div class="bk-header-title">Book Service</div>
+      <button class="bk-close" onclick="closeBooking()">✕</button>
+    </div>
+    <div class="bk-progress" id="bk-progress"><div class="bk-prog-track"><div id="bk-fill" class="bk-prog-fill"></div></div></div>
+    <div class="bk-body">
+      <div id="bk-1" class="bk-step show"><h3>Choose service</h3><div class="bk-step-sub">Pick the service you'd like to book.</div><div class="bk-svc-grid" id="bk-svc-grid"></div></div>
+      <div id="bk-2" class="bk-step"><h3>Your address</h3><div class="bk-field"><label class="bk-field-label">Street</label><input class="bk-field-input" id="bk-street" placeholder="e.g. 1234 Maple Ave"></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="bk-field"><label class="bk-field-label">City</label><select class="bk-field-input" id="bk-city"><option>Aurora</option><option>Centennial</option><option>Parker</option><option>Englewood</option></select></div><div class="bk-field"><label class="bk-field-label">ZIP</label><input class="bk-field-input" id="bk-zip" maxlength="5"></div></div></div>
+      <div id="bk-3" class="bk-step"><h3>Pick date & time</h3><div class="bk-cal-nav"><button onclick="bkMonth(-1)">‹</button><div class="bk-cal-month" id="bk-month"></div><button onclick="bkMonth(1)">›</button></div><div id="bk-cal" class="bk-cal-grid"></div><div class="bk-slots-label" id="bk-slots-label">Select a date</div><div id="bk-slots" class="bk-slots-grid"></div></div>
+      <div id="bk-4" class="bk-step"><h3>Your contact</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="bk-field"><label class="bk-field-label">First</label><input class="bk-field-input" id="bk-fname"></div><div class="bk-field"><label class="bk-field-label">Last</label><input class="bk-field-input" id="bk-lname"></div></div><div class="bk-field"><label class="bk-field-label">Phone</label><input class="bk-field-input" type="tel" id="bk-phone" placeholder="(720) 000-0000"></div><div class="bk-field"><label class="bk-field-label">Email</label><input class="bk-field-input" type="email" id="bk-email"></div></div>
+      <div id="bk-5" class="bk-step"><h3>Review & confirm</h3><div class="bk-summary" id="bk-summary"></div></div>
+      <div id="bk-6" class="bk-step"><div class="bk-confirm"><div class="bk-confirm-icon">✓</div><div class="bk-confirm-title">Booked!</div><p class="bk-confirm-sub">Your appointment is scheduled. Ricardo will call to confirm.</p><div class="bk-confirm-card"><div style="font-size:10px;font-weight:700;color:#8AAA8A;text-transform:uppercase;margin-bottom:2px">Reference</div><div class="bk-confirm-ref" id="bk-ref"></div><div id="bk-confirm-details"></div></div><button class="bk-confirm-close" onclick="closeBooking()">Done</button></div></div>
+    </div>
+    <div class="bk-footer" id="bk-footer"><div class="bk-step-counter" id="bk-counter"></div><div class="bk-footer-btns"><button class="bk-btn bk-btn-back" id="bk-back" onclick="bkStep--;render()">Back</button><button class="bk-btn bk-btn-next" id="bk-next" onclick="bkNext()">Next</button></div></div>
+  </div>
+</div>
+
+<script>
+const SERVICES=[{icon:"💧",name:"Sprinkler Turn-On",price:"$89",raw:"$89"},{icon:"❄️",name:"Winterization",price:"$89",raw:"$89"},{icon:"🔁",name:"Mowing Recurring",price:"$45",raw:"$45/visit"},{icon:"✂️",name:"Mowing One-Time",price:"$59",raw:"$59"},{icon:"🌿",name:"Edging",price:"$49",raw:"$49"},{icon:"🌳",name:"Tree Trimming",price:"From $149",raw:"From $149"}];
+const AREAS=["Aurora","Centennial","Parker","Englewood","Greenwood Village","Littleton","Highlands Ranch","Lone Tree"];
+const SLOTS=["7:00 AM","8:00 AM","9:00 AM","10:00 AM","11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM"];
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+const SM={pending:{label:"Pending",color:"#92400E",bg:"#FEF3C7",dot:"#F59E0B"},confirmed:{label:"Confirmed",color:"#065F46",bg:"#D1FAE5",dot:"#10B981"},completed:{label:"Completed",color:"#4B5563",bg:"#E5E7EB",dot:"#6B7280"}};
+
+let bkStep=1,bkService=null,bkDate=null,bkTime=null,calY=new Date().getFullYear(),calM=new Date().getMonth(),bookings=[],adminSelected=null,adminPeriod='week',ricardoNotesEdit={},statusFilter=null;
+
+function switchView(v){document.getElementById('site-view').style.display=v==='site'?'block':'none';document.getElementById('admin-view').classList.toggle('show',v==='admin');document.querySelectorAll('.btn-switch').forEach((b,i)=>b.classList.toggle('active',v===(['site','admin'][i])));}
+function openBooking(i){bkStep=1;bkService=i!==null?SERVICES[i]:null;bkDate=null;bkTime=null;document.getElementById('bk-overlay').classList.add('open');render();}
+function closeBooking(){document.getElementById('bk-overlay').classList.remove('open');}
+function confirmBooking(id){const b=bookings.find(x=>x.id===id);if(b){b.status='confirmed';localStorage.setItem(b.id,JSON.stringify(b));loadBookings();}}
+function completeBooking(id){const b=bookings.find(x=>x.id===id);if(b){b.status='completed';localStorage.setItem(b.id,JSON.stringify(b));loadBookings();}}
+
+function render(){
+  const pcts=[10,27,44,61,78];
+  document.getElementById('bk-fill').style.width=pcts[Math.min(bkStep-1,4)]+'%';
+  document.getElementById('bk-counter').textContent=bkStep<=5?`${bkStep}/5`:'';
+  document.getElementById('bk-progress').classList.toggle('show',bkStep<=5);
+  document.getElementById('bk-footer').classList.toggle('hidden',bkStep===6);
+  document.querySelectorAll('.bk-step').forEach((s,i)=>s.classList.toggle('show',i+1===bkStep));
+  document.getElementById('bk-back').style.display=bkStep>1&&bkStep<=5?'block':'none';
+  document.getElementById('bk-next').textContent=bkStep===5?'Confirm':'Next';
+  if(bkStep===1){document.getElementById('bk-svc-grid').innerHTML=SERVICES.map((s,i)=>`<div class="bk-svc-opt ${bkService===s?'selected':''}" onclick="bkService=SERVICES[${i}];render()"><div class="bk-svc-icon">${s.icon}</div><div class="bk-svc-name">${s.name}</div><div class="bk-svc-price">${s.raw}</div></div>`).join('');}
+  else if(bkStep===3){renderCal();}
+  else if(bkStep===5){document.getElementById('bk-summary').innerHTML=`<div class="bk-sum-row"><span class="bk-sum-label">Service</span><span class="bk-sum-val">${bkService.name}</span></div><div class="bk-sum-row"><span class="bk-sum-label">Date</span><span class="bk-sum-val">${bkDate.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span></div><div class="bk-sum-row"><span class="bk-sum-label">Time</span><span class="bk-sum-val">${bkTime}</span></div><div class="bk-sum-row"><span class="bk-sum-label">Name</span><span class="bk-sum-val">${document.getElementById('bk-fname').value||'—'}</span></div><div class="bk-sum-row"><span class="bk-sum-label">Price</span><span class="bk-sum-val bk-sum-price">${bkService.raw}</span></div>`;}
+}
+
+function renderCal(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const firstDay=new Date(calY,calM,1).getDay(),daysInMonth=new Date(calY,calM+1,0).getDate();
+  document.getElementById('bk-month').textContent=`${MONTHS[calM]} ${calY}`;
+  let cells='';
+  for(let i=0;i<firstDay;i++)cells+='<div></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const dt=new Date(calY,calM,d),dow=dt.getDay(),dis=dt<today||dow===0,isSel=bkDate&&bkDate.getTime()===dt.getTime();
+    cells+=`<button class="bk-cal-day ${isSel?'selected':''}${dis?' disabled':''}" onclick="${dis?'':'bkDate=new Date('+calY+','+calM+','+d+');bkTime=null;render()'}" ${dis?'disabled':''}>${d}</button>`;
+  }
+  document.getElementById('bk-cal').innerHTML=cells;
+  if(bkDate){
+    document.getElementById('bk-slots-label').textContent=`${bkDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}`;
+    document.getElementById('bk-slots').innerHTML=SLOTS.map(t=>`<button class="bk-slot ${bkTime===t?'selected':''}" onclick="bkTime='${t}';render()">${t}</button>`).join('');
+  }
+}
+
+function bkMonth(d){calM+=d;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}renderCal();}
+function bkNext(){
+  if(bkStep<5){bkStep++;render();}
+  else if(bkStep===5){
+    const id='ADF-'+Math.floor(100000+Math.random()*900000);
+    // Format date as YYYY-MM-DD consistently
+    const year=bkDate.getFullYear();
+    const month=String(bkDate.getMonth()+1).padStart(2,'0');
+    const day=String(bkDate.getDate()).padStart(2,'0');
+    const dateStr=`${year}-${month}-${day}`;
+    const booking={id,service:bkService.name,icon:bkService.icon,price:bkService.raw,date:dateStr,time:bkTime,status:'pending',fname:document.getElementById('bk-fname').value,lname:document.getElementById('bk-lname').value,phone:document.getElementById('bk-phone').value,email:document.getElementById('bk-email').value,address:document.getElementById('bk-street').value,city:document.getElementById('bk-city').value,zip:document.getElementById('bk-zip').value,ricardoNotes:'',createdAt:new Date().toISOString(),invoiceSent:false,invoiceId:null,paymentReceived:false,paymentMethod:null,paymentId:null};
+    console.log('Creating booking with date:', dateStr, 'booking:', booking);
+    localStorage.setItem(id,JSON.stringify(booking));
+    console.log('Booking saved:', booking);
+    console.log('All bookings in storage:', Object.keys(localStorage).filter(k=>k.startsWith('ADF-')));
+    console.log('Verify save - get from storage:', localStorage.getItem(id));
+    bkStep=6;
+    document.getElementById('bk-ref').textContent=id;
+    const ds=bkDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    document.getElementById('bk-confirm-details').innerHTML=`<div class="bk-confirm-detail"><strong>Service:</strong> ${bkService.name}</div><div class="bk-confirm-detail"><strong>When:</strong> ${ds} at ${bkTime}</div><div class="bk-confirm-detail"><strong>Where:</strong> ${document.getElementById('bk-street').value}, ${document.getElementById('bk-city').value}</div>`;
+    render();
+    // Reload bookings to show in admin
+    setTimeout(()=>{loadBookings();}, 100);
+  }
+}
+
+function toggleStats(){const content=document.getElementById('admin-stats-content');const toggle=document.getElementById('admin-stats-toggle');if(content.style.display==='none'){content.style.display='block';toggle.textContent='▼';}else{content.style.display='none';toggle.textContent='▶';}}
+function setPeriod(p){adminPeriod=p;statusFilter=null;document.querySelectorAll('.admin-period-btn').forEach(b=>b.classList.remove('active'));document.getElementById('period-'+p).classList.add('active');adminRender();}
+function setStatusFilter(status){statusFilter=statusFilter===status?null:status;adminRender();}
+function selectBooking(id){adminSelected=adminSelected===id?null:id;adminRender();}
+function saveRicardoNotes(id){const b=bookings.find(x=>x.id===id);if(b){b.ricardoNotes=document.getElementById('ricardo-notes-textarea').value;localStorage.setItem(b.id,JSON.stringify(b));loadBookings();}}
+function cancelRicardoNotes(){adminSelected=null;adminRender();}
+function completeBooking(id){const b=bookings.find(x=>x.id===id);if(b){b.status='completed';localStorage.setItem(b.id,JSON.stringify(b));loadBookings();}}
+function generateInvoice(id){adminSelected=null;document.getElementById('invoice-modal').classList.add('show');document.getElementById('invoice-booking-id').value=id;renderInvoice(id);}
+function renderInvoice(id){const b=bookings.find(x=>x.id===id);if(!b)return;const invoiceNum='INV-'+b.id.substring(4);const date=new Date(b.date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});const invoiceHTML=`<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px"><div style="text-align:center;margin-bottom:30px"><div style="font-size:24px;font-weight:bold;color:#2A7A2A">🌿 Arbol De Fuego Services</div><div style="color:#666;font-size:12px">Professional Lawn & Sprinkler Care</div></div><div style="border-bottom:2px solid #2A7A2A;padding-bottom:15px;margin-bottom:20px"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><div><strong>Invoice:</strong> ${invoiceNum}</div><div><strong>Date:</strong> ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div></div><div><strong>Service Date:</strong> ${date}</div></div><div style="margin-bottom:25px"><div style="font-weight:bold;margin-bottom:10px">Bill To:</div><div>${b.fname} ${b.lname}</div><div>${b.address}</div><div>${b.city}, ${b.zip}</div><div style="margin-top:5px;color:#666">Phone: ${b.phone}</div><div style="color:#666">Email: ${b.email}</div></div><div style="margin-bottom:25px"><table style="width:100%;border-collapse:collapse"><tr style="border-bottom:1px solid #ddd"><th style="text-align:left;padding:10px;background:#f5f5f5">Description</th><th style="text-align:right;padding:10px;background:#f5f5f5">Amount</th></tr><tr style="border-bottom:1px solid #ddd"><td style="padding:10px">${b.service}</td><td style="text-align:right;padding:10px;font-weight:bold">${b.price}</td></tr><tr><td style="padding:10px;text-align:right;font-weight:bold">Total:</td><td style="text-align:right;padding:10px;font-size:18px;font-weight:bold;color:#2A7A2A">${b.price}</td></tr></table></div><div style="background:#f5f5f5;padding:15px;border-radius:8px;margin-bottom:20px"><div style="font-size:12px;color:#666;margin-bottom:5px">Thank you for your business!</div><div style="font-size:12px;color:#666">Please call (720) 210-3718 if you have any questions.</div></div><div style="text-align:center;color:#999;font-size:11px">Arbol De Fuego Services • Denver Metro, CO<br>© 2026 All rights reserved</div></div>`;document.getElementById('invoice-display').innerHTML=invoiceHTML;}
+function sendInvoice(method){const id=document.getElementById('invoice-booking-id').value;const b=bookings.find(x=>x.id===id);if(!b)return;let msg='';if(method==='sms'){msg=`Invoice sent via SMS to ${b.phone}`;}else if(method==='email'){msg=`Invoice sent to ${b.email}`;}alert(msg+'\n\n📋 Invoice: INV-'+b.id.substring(4)+'\n💰 Amount: '+b.price+'\n📱 Contact: (720) 210-3718');closeInvoice();}
+function closeInvoice(){document.getElementById('invoice-modal').classList.remove('show');}
+function getPeriodDates(){const today=new Date();today.setHours(0,0,0,0);const start=new Date(today);const end=new Date(today);if(adminPeriod==='week'){const dayOfWeek=today.getDay();const diff=today.getDate()-dayOfWeek+(dayOfWeek===0?-6:1);start.setDate(diff);end.setDate(start.getDate()+6);}else{start.setDate(1);end.setMonth(end.getMonth()+1);end.setDate(0);}end.setHours(23,59,59,999);return{start,end};}
+
+function loadBookings(){bookings=[];for(let k in localStorage){if(k.startsWith('ADF-')){const b=JSON.parse(localStorage[k]);if(!b.ricardoNotes)b.ricardoNotes='';bookings.push(b);}}console.log('Loaded bookings from storage:', bookings);adminRender();}
+
+function adminRender(){
+  console.log('adminRender called, bookings:', bookings, 'period:', adminPeriod);
+  const {start,end}=getPeriodDates();
+  console.log('Period dates:', start, end);
+  let filtered=[...bookings].filter(b=>{if(!b||!b.date)return false;try{const d=new Date(b.date);const dateMatch=d>=start&&d<=end;const statusMatch=!statusFilter||b.status===statusFilter;return dateMatch&&statusMatch;}catch(e){return false;}});
+  filtered.sort((a,b)=>{const dateA=new Date(a.date);const dateB=new Date(b.date);if(dateA.getTime()!==dateB.getTime())return dateA-dateB;const timeA=SLOTS.indexOf(a.time);const timeB=SLOTS.indexOf(b.time);return timeA-timeB;});
+  
+  // Stats - ALWAYS include all bookings regardless of completed filter
+  const totals={total:0,pending:0,confirmed:0,completed:0,pendingSvcs:0,revenue:0,services:{}};
+  bookings.forEach(b=>{if(!b||!b.date)return;try{const d=new Date(b.date);if(d>=start&&d<=end){totals.total++;if(b.status==='pending'){totals.pending++;totals.pendingSvcs++;}if(b.status==='confirmed')totals.confirmed++;if(b.status==='completed')totals.completed++;const p=parseFloat((b.price||'0').replace(/[^0-9.]/g,''))||0;totals.revenue+=p;if(b.service)totals.services[b.service]=(totals.services[b.service]||0)+1;}}catch(e){console.error('Error processing booking:', b, e);}});
+  document.getElementById('stat-total').textContent=totals.total;
+  document.getElementById('stat-revenue').textContent='$'+totals.revenue;
+  document.getElementById('stat-pending').textContent=totals.pending;
+  document.getElementById('stat-pending-svcs').textContent=totals.pendingSvcs;
+  document.getElementById('stat-confirmed').textContent=totals.confirmed;
+  document.getElementById('stat-completed').textContent=totals.completed;
+  document.getElementById('stat-services').innerHTML=Object.entries(totals.services).map(([s,c])=>`<strong>${s}:</strong> ${c}`).join(' | ')||'-';
+  
+  // Jobs List grouped by date - show ALL bookings
+  const grouped={};
+  console.log('Filtered bookings:', filtered);
+  filtered.forEach(b=>{if(!grouped[b.date])grouped[b.date]=[];grouped[b.date].push(b);});
+  console.log('Grouped by date:', grouped);
+  
+  try {
+    if(filtered.length===0){
+      document.getElementById('admin-list').innerHTML='<div class="admin-empty">No bookings for this period</div>';
+    } else {
+      let listHTML='';
+      const sortedDates=Object.keys(grouped).sort();
+      for(const date of sortedDates){
+        const jobs=grouped[date];
+        const d=new Date(date);
+        const dow=d.toLocaleDateString('en-US',{weekday:'short'});
+        const mon=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+        listHTML+=`<div class="admin-date-group"><div class="admin-date-header">${dow}, ${mon}</div>`;
+        
+        for(const b of jobs){
+          const s=SM[b.status]||{label:'Unknown',color:'#999',bg:'#eee',dot:'#999'};
+          listHTML+=`<button class="admin-item ${adminSelected===b.id?'active':''}" onclick="selectBooking('${b.id}')" style="border:none;background:transparent">
+            <div class="admin-item-info">
+              <div class="admin-item-time">${b.time}</div>
+              <div class="admin-item-name">${b.fname} ${b.lname}</div>
+              <div class="admin-item-service">${b.icon} ${b.service}</div>
+              <div class="admin-item-location">${b.city}</div>
+            </div>
+            <div class="admin-item-right">
+              <div class="admin-status" style="background:${s.bg};color:${s.color}">
+                <span style="width:4px;height:4px;border-radius:50%;background:${s.dot}"></span>${s.label}
+              </div>
+            </div>
+          </button>`;
+        }
+        listHTML+='</div>';
+      }
+      document.getElementById('admin-list').innerHTML=listHTML;
+      console.log('List HTML rendered successfully');
+    }
+  } catch(e){
+    console.error('Error rendering list:', e);
+    document.getElementById('admin-list').innerHTML='<div class="admin-empty">Error loading bookings</div>';
+  }
+  
+  if(adminSelected){const b=bookings.find(x=>x.id===adminSelected);if(b){const custNotes=b.address||'Gate code, special instructions, etc.';const notes=b.ricardoNotes||'';let actionBtns='';if(b.status==='pending'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="confirmBooking('${b.id}')">✓ Confirm</button>`;}else if(b.status==='confirmed'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="completeBooking('${b.id}')">✓ Complete</button>`;}else if(b.status==='completed'){actionBtns=`<button class="admin-action-btn admin-action-complete" onclick="generateInvoice('${b.id}')">📄 Generate Invoice</button>`;}document.getElementById('admin-detail-modal').classList.add('show');document.getElementById('admin-detail-modal-content').innerHTML=`<button class="admin-detail-modal-close" onclick="selectBooking(null)">✕</button><div class="admin-detail-name">${b.fname} ${b.lname}</div><div class="admin-info-section"><div class="admin-info-section-title">Contact</div><div class="admin-info-row"><span class="admin-info-label">📞</span><span class="admin-info-val">${b.phone}</span></div><div class="admin-info-row"><span class="admin-info-label">✉</span><span class="admin-info-val">${b.email}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Service Details</div><div class="admin-info-row"><span class="admin-info-label">Service</span><span class="admin-info-val">${b.service}</span></div><div class="admin-info-row"><span class="admin-info-label">Date</span><span class="admin-info-val">${new Date(b.date+'T12:00:00').toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'})}</span></div><div class="admin-info-row"><span class="admin-info-label">Time</span><span class="admin-info-val">${b.time}</span></div><div class="admin-info-row"><span class="admin-info-label">Price</span><span class="admin-info-val" id="price-display">${b.price}</span><button class="admin-action-btn" style="background:#E8722A;color:white;border:none;padding:4px 10px;font-size:11px;margin-left:8px;cursor:pointer;border-radius:4px" onclick="editPrice('${b.id}')">Edit</button></div></div><div class="admin-info-section"><div class="admin-info-section-title">Location</div><div class="admin-info-row"><span class="admin-info-label">Address</span><span class="admin-info-val">${b.address}</span></div><div class="admin-info-row"><span class="admin-info-label">City</span><span class="admin-info-val">${b.city}, ${b.zip}</span></div></div><div class="admin-info-section"><div class="admin-info-section-title">Customer Notes</div><div class="admin-notes-area">${custNotes||'<span class="admin-notes-empty">None</span>'}</div></div><div class="admin-info-section"><div class="admin-info-section-title">Your Notes</div><textarea class="admin-textarea" id="ricardo-notes-textarea" placeholder="Add your notes here...">${notes}</textarea></div><div class="admin-actions">${actionBtns}<button class="admin-action-btn admin-action-save" onclick="saveRicardoNotes('${b.id}')">Save Notes</button><button class="admin-action-btn admin-action-cancel-edit" onclick="cancelRicardoNotes()">Cancel</button></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;padding-top:16px;border-top:1px solid #1E2D1E"><div class="admin-info-row" style="flex-direction:column;border:none;padding:0"><span class="admin-info-label">Invoice Status</span><span class="admin-info-val" style="margin-top:3px">${b.invoiceSent ? 'Sent - ' + b.invoiceId : 'Not sent'}</span></div><div class="admin-info-row" style="flex-direction:column;border:none;padding:0"><span class="admin-info-label">Payment Status</span><span class="admin-info-val" style="margin-top:3px">${b.paymentReceived ? 'Received - ' + b.paymentMethod : 'Not received'}</span></div></div>`;}else{document.getElementById('admin-detail-modal').classList.remove('show');}}else{document.getElementById('admin-detail-modal').classList.remove('show');}
+}
+
+document.getElementById('svc-grid').innerHTML=SERVICES.map((s,i)=>`<div class="s-svc-card"><div class="s-svc-icon">${s.icon}</div><div class="s-svc-name">${s.name}</div><div class="s-svc-desc">Professional service</div><div class="s-svc-right"><div class="s-svc-price">${s.price}</div><button class="s-svc-book" onclick="openBooking(${i})">Book</button></div></div>`).join('');
+document.getElementById('area-chips').innerHTML=AREAS.map(a=>`<span style="background:#E8F5E9;color:#1B5E20;padding:5px 10px;border-radius:16px;font-size:11px;font-weight:600">${a}</span>`).join('');
+loadBookings();
+
+
+// ===== PHASE 2: INVOICE & PAYMENT SYSTEM =====
+let p2Invoices = [];
+let p2Payments = [];
+let p2Receipts = [];
+let p2SelectedInvoice = null;
+let p2SelectedPayment = null;
+
+// ===== BRIDGE: HOOK PHASE 1 INVOICE SENDING TO PHASE 2 =====
+// Store original sendInvoice function
+const phase1SendInvoice = typeof sendInvoice === 'function' ? sendInvoice : null;
+
+// Override sendInvoice to connect to Phase 2
+function sendInvoice(method) {
+  const id = document.getElementById('invoice-booking-id').value;
+  const b = bookings.find(x => x.id === id);
+  if (!b) return;
+  
+  // Generate Phase 2 invoice when sending
+  const invoice = p2GenerateInvoiceFromBooking(id);
+  
+  // Mark invoice as sent on booking
+  b.invoiceSent = true;
+  b.invoiceId = invoice.id;
+  localStorage.setItem(b.id, JSON.stringify(b));
+  
+  // Show Phase 1 alert
+  let msg = '';
+  if (method === 'sms') {
+    msg = `Invoice sent via SMS to ${b.phone}`;
+  } else if (method === 'email') {
+    msg = `Invoice sent to ${b.email}`;
+  }
+  
+  alert(msg + '\n\n📋 Invoice: INV-' + b.id.substring(4) + '\n💰 Amount: ' + b.price + '\n📱 Contact: (720) 210-3718\n\n✅ Invoice added to Invoices tab');
+  
+  closeInvoice();
+}
+
+// ===== PRICE EDITING =====
+let priceEditBookingId = null;
+
+function editPrice(bookingId) {
+  priceEditBookingId = bookingId;
+  const b = bookings.find(x => x.id === bookingId);
+  if (b) {
+    // Extract numeric value from price (e.g., "$89" -> "89")
+    const numPrice = b.price.replace(/[^\d.-]/g, '');
+    document.getElementById('price-input').value = numPrice;
+    document.getElementById('price-edit-modal').style.display = 'flex';
+    document.getElementById('price-input').focus();
+    document.getElementById('price-input').select();
+  }
+}
+
+function closePriceEdit() {
+  document.getElementById('price-edit-modal').style.display = 'none';
+  priceEditBookingId = null;
+}
+
+function savePriceEdit() {
+  if (!priceEditBookingId) return;
+  
+  const newPrice = document.getElementById('price-input').value;
+  if (!newPrice || isNaN(newPrice) || newPrice <= 0) {
+    alert('Please enter a valid price');
+    return;
+  }
+  
+  const b = bookings.find(x => x.id === priceEditBookingId);
+  if (b) {
+    const oldPrice = b.price;
+    b.price = '$' + parseFloat(newPrice).toFixed(2);
+    localStorage.setItem(b.id, JSON.stringify(b));
+    
+    // Update display
+    document.getElementById('price-display').textContent = b.price;
+    
+    console.log('✅ Price updated: ' + priceEditBookingId + ' from ' + oldPrice + ' to ' + b.price);
+    
+    alert('Price updated to ' + b.price);
+    closePriceEdit();
+    
+    // Refresh the detail modal display
+    selectBooking(priceEditBookingId);
+  }
+}
+
+function switchAdminTab(tabName) {
+  document.querySelectorAll('.admin-tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+  
+  const tab = document.getElementById(tabName + '-tab');
+  const btn = event?.target;
+  
+  if (tab) {
+    tab.classList.add('active');
+    if (tab.id === 'invoices-tab') p2RenderInvoices();
+    if (tab.id === 'payments-tab') p2RenderPayments();
+  }
+  if (btn) btn.classList.add('active');
+}
+
+function p2GenerateInvoiceFromBooking(bookingId) {
+  const booking = bookings.find(b => b.id === bookingId);
+  if (!booking) return;
+  
+  const invoiceId = 'INV-' + Math.floor(Math.random() * 1000000);
+  const dueDate = new Date();
+  dueDate.setDate(dueDate.getDate() + 15);
+  
+  const invoice = {
+    id: invoiceId,
+    bookingId: bookingId,
+    serviceName: booking.service,
+    serviceIcon: booking.icon,
+    amount: parseFloat(booking.price.replace(/[^0-9.]/g, '')),
+    customerName: booking.fname + ' ' + booking.lname,
+    customerEmail: booking.email,
+    customerPhone: booking.phone,
+    customerAddress: booking.address + ', ' + booking.city + ' ' + booking.zip,
+    date: booking.date,
+    time: booking.time,
+    createdAt: new Date().toISOString(),
+    dueDate: dueDate.toISOString().split('T')[0],
+    status: 'sent'
+  };
+  
+  p2Invoices.push(invoice);
+  localStorage.setItem('p2_invoices', JSON.stringify(p2Invoices));
+  console.log('✅ Invoice generated:', invoiceId);
+  console.log('📧 [EmailService] Invoice sent to:', booking.email);
+  console.log('📱 [SMSService] Invoice SMS sent to:', booking.phone);
+  
+  return invoice;
+}
+
+function p2RenderInvoices() {
+  const list = document.getElementById('p2-invoices-list');
+  
+  if (p2Invoices.length === 0) {
+    list.innerHTML = '<div class="p2-empty">No invoices yet</div>';
+    return;
+  }
+  
+  list.innerHTML = p2Invoices.map(inv => `
+    <button class="p2-list-item ${p2SelectedInvoice === inv.id ? 'selected' : ''}" onclick="p2ShowInvoice('${inv.id}')">
+      <div class="p2-list-item-primary">${inv.serviceName}</div>
+      <div class="p2-list-item-secondary">$${inv.amount.toFixed(2)} • ${inv.customerName}</div>
+      <div class="p2-list-item-secondary">${inv.status.toUpperCase()}</div>
+    </button>
+  `).join('');
+}
+
+function p2ShowInvoice(invoiceId) {
+  p2SelectedInvoice = invoiceId;
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  const detailDiv = document.getElementById('p2-invoice-detail');
+  const booking = bookings.find(b => b.id === invoice.bookingId);
+  
+  const paymentStatusHTML = invoice.status === 'paid' ? 
+    `<div style="background:#E8F5E9;border-left:4px solid #2A7A2A;padding:12px;border-radius:6px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#1B5E20">✓ PAID</div>
+      <div style="font-size:11px;color:#2A7A2A;margin-top:3px">Payment Method: ${invoice.paymentMethod || 'Unknown'}</div>
+    </div>` : 
+    `<div style="background:#FFF3E0;border-left:4px solid #E65100;padding:12px;border-radius:6px;margin-bottom:14px">
+      <div style="font-size:12px;font-weight:700;color:#E65100">⏳ PAYMENT DUE</div>
+      <div style="font-size:11px;color:#1A2B1A;margin-top:3px">We accept: 💳 Card | 💰 Cash | 📱 Venmo</div>
+    </div>`;
+  
+  detailDiv.innerHTML = `
+    ${paymentStatusHTML}
+    
+    <div class="p2-invoice-display">
+      <div class="p2-invoice-header">
+        <div class="p2-invoice-business">ARBOL DE FUEGO</div>
+        <div class="p2-invoice-number">Invoice #${invoice.id}</div>
+      </div>
+      
+      <div class="p2-invoice-section">
+        <div class="p2-invoice-section-title">Bill To</div>
+        <div class="p2-invoice-section-content">
+          ${invoice.customerName}<br>
+          ${invoice.customerAddress}<br>
+          ${invoice.customerPhone}<br>
+          ${invoice.customerEmail}
+        </div>
+      </div>
+      
+      <div class="p2-invoice-section">
+        <div class="p2-invoice-section-title">Service Details</div>
+        <div class="p2-invoice-line">
+          <span>${invoice.serviceIcon} ${invoice.serviceName}</span>
+          <span>$${invoice.amount.toFixed(2)}</span>
+        </div>
+        <div class="p2-invoice-line" style="margin-top:6px;border-top:1px solid #F0F8F0;padding-top:6px">
+          <span style="font-weight:700">Date</span>
+          <span>${new Date(invoice.date).toLocaleDateString()} @ ${invoice.time}</span>
+        </div>
+      </div>
+      
+      <div class="p2-invoice-section">
+        <div class="p2-invoice-line">
+          <span>Subtotal</span>
+          <span>$${invoice.amount.toFixed(2)}</span>
+        </div>
+        <div class="p2-amount-due">
+          Total Due: $${invoice.amount.toFixed(2)}
+        </div>
+      </div>
+      
+      <div class="p2-invoice-section">
+        <div class="p2-invoice-section-title">Payment Due</div>
+        <div class="p2-invoice-section-content">
+          ${new Date(invoice.dueDate).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'})}
+        </div>
+      </div>
+    </div>
+    
+    <div class="p2-actions">
+      ${invoice.status !== 'paid' ? `
+        <button class="p2-action-btn primary" onclick="p2OpenPaymentModal('${invoiceId}')">💳 Pay Online</button>
+        <button class="p2-action-btn" onclick="p2OpenPaymentMethodModal('${invoiceId}')">💰 Received In Person</button>
+        <button class="p2-action-btn" onclick="p2ResendInvoice('${invoiceId}')">📧 Resend</button>
+      ` : `
+        <button class="p2-action-btn" onclick="p2ResendInvoice('${invoiceId}')">📧 Resend Receipt</button>
+      `}
+    </div>
+  `;
+  
+  p2RenderInvoices();
+}
+
+function p2ProcessPayment(invoiceId) {
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  // Create payment
+  const paymentId = 'PAY-' + Math.floor(Math.random() * 1000000);
+  const payment = {
+    id: paymentId,
+    invoiceId: invoiceId,
+    bookingId: invoice.bookingId,
+    amount: invoice.amount,
+    method: invoice.paymentMethod || 'online_card',
+    createdAt: new Date().toISOString(),
+    status: 'completed'
+  };
+  
+  p2Payments.push(payment);
+  
+  // Create receipt
+  const receiptId = 'REC-' + Math.floor(Math.random() * 1000000);
+  const receipt = {
+    id: receiptId,
+    paymentId: paymentId,
+    invoiceId: invoiceId,
+    bookingId: invoice.bookingId,
+    amountPaid: invoice.amount,
+    paymentMethod: invoice.paymentMethod || 'online_card',
+    serviceName: invoice.serviceName,
+    serviceIcon: invoice.serviceIcon,
+    customerName: invoice.customerName,
+    customerEmail: invoice.customerEmail,
+    customerPhone: invoice.customerPhone,
+    createdAt: new Date().toISOString(),
+    delivery: {
+      email: { sent: true, sentAt: new Date().toISOString() },
+      sms: { sent: true, sentAt: new Date().toISOString() }
+    }
+  };
+  
+  p2Receipts.push(receipt);
+  
+  // Update invoice status
+  invoice.status = 'paid';
+  
+  // Update booking with payment info
+  const booking = bookings.find(b => b.id === invoice.bookingId);
+  if (booking) {
+    booking.paymentReceived = true;
+    booking.paymentMethod = invoice.paymentMethod || 'online_card';
+    booking.paymentId = paymentId;
+    localStorage.setItem(booking.id, JSON.stringify(booking));
+  }
+  
+  // Save
+  localStorage.setItem('p2_invoices', JSON.stringify(p2Invoices));
+  localStorage.setItem('p2_payments', JSON.stringify(p2Payments));
+  localStorage.setItem('p2_receipts', JSON.stringify(p2Receipts));
+  
+  console.log('✅ Payment processed:', paymentId);
+  console.log('✅ Receipt generated:', receiptId);
+  console.log('📧 [EmailService] Receipt sent to:', invoice.customerEmail);
+  console.log('📱 [SMSService] Receipt SMS sent to:', invoice.customerPhone);
+  
+  alert('✅ Payment processed! Receipt generated and sent to customer.');
+  p2ShowInvoice(invoiceId);
+}
+
+// ===== PAYMENT FLOW: ONLINE PAYMENT (Customer) =====
+function p2OpenPaymentModal(invoiceId) {
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  document.getElementById('p2-payment-modal').style.display = 'flex';
+  
+  // Show invoice summary
+  document.getElementById('p2-payment-invoice-summary').innerHTML = `
+    <div style="margin-bottom:8px">
+      <div style="font-size:11px;color:#5A7A5A">Invoice</div>
+      <div style="font-size:14px;font-weight:700;color:#1A2B1A">${invoice.serviceName}</div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:#1A2B1A;border-top:1px solid #CDDECA;padding-top:8px">
+      <span>Amount Due</span>
+      <span style="font-weight:700">$${invoice.amount.toFixed(2)}</span>
+    </div>
+  `;
+  
+  document.getElementById('p2-payment-amount').textContent = invoice.amount.toFixed(2);
+  document.getElementById('p2-venmo-amount').textContent = invoice.amount.toFixed(2);
+  document.getElementById('p2-venmo-ref').textContent = invoice.id;
+}
+
+function p2ClosePaymentModal() {
+  document.getElementById('p2-payment-modal').style.display = 'none';
+  document.getElementById('p2-payment-form').style.display = 'none';
+  document.getElementById('p2-venmo-info').style.display = 'none';
+}
+
+function p2SelectPaymentMethod(method) {
+  document.getElementById('p2-payment-form').style.display = method === 'online_card' ? 'block' : 'none';
+  document.getElementById('p2-venmo-info').style.display = method === 'venmo' ? 'block' : 'none';
+}
+
+function p2ProcessOnlinePayment() {
+  const invoiceId = p2SelectedInvoice;
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  invoice.paymentMethod = 'Online Card';
+  p2ProcessPayment(invoiceId);
+  p2ClosePaymentModal();
+}
+
+function p2ConfirmVenmoPayment() {
+  const invoiceId = p2SelectedInvoice;
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  invoice.paymentMethod = 'Venmo';
+  p2ProcessPayment(invoiceId);
+  p2ClosePaymentModal();
+}
+
+// ===== PAYMENT FLOW: IN-PERSON PAYMENT (Ricardo) =====
+function p2OpenPaymentMethodModal(invoiceId) {
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  document.getElementById('p2-payment-method-modal').style.display = 'flex';
+  document.getElementById('p2-method-details').innerHTML = `
+    <div style="font-size:12px;color:#5A7A5A;margin-bottom:4px">Customer: <strong>${invoice.customerName}</strong></div>
+    <div style="font-size:16px;font-weight:700;color:#2A7A2A">$${invoice.amount.toFixed(2)}</div>
+  `;
+}
+
+function p2ClosePaymentMethodModal() {
+  document.getElementById('p2-payment-method-modal').style.display = 'none';
+}
+
+function p2CompletePaymentWithMethod(method) {
+  const invoiceId = p2SelectedInvoice;
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (!invoice) return;
+  
+  const methodMap = {
+    'cash': 'Cash',
+    'card': 'Physical Card',
+    'venmo': 'Venmo'
+  };
+  
+  invoice.paymentMethod = methodMap[method];
+  p2ProcessPayment(invoiceId);
+  p2ClosePaymentMethodModal();
+}
+
+function p2ResendInvoice(invoiceId) {
+  const invoice = p2Invoices.find(i => i.id === invoiceId);
+  if (invoice) {
+    console.log('📧 [EmailService] Invoice resent to:', invoice.customerEmail);
+    console.log('📱 [SMSService] Invoice resent to:', invoice.customerPhone);
+    alert('✅ Invoice resent to ' + invoice.customerEmail);
+  }
+}
+
+function p2MarkPaid(invoiceId) {
+  p2OpenPaymentMethodModal(invoiceId);
+}
+
+function p2RenderPayments() {
+  const paymentsList = document.getElementById('p2-payments-list');
+  const receiptDetail = document.getElementById('p2-receipt-detail');
+  
+  if (p2Payments.length === 0) {
+    paymentsList.innerHTML = '<div class="p2-empty">No payments yet</div>';
+    return;
+  }
+  
+  paymentsList.innerHTML = p2Payments.map(pmt => {
+    const invoice = p2Invoices.find(i => i.id === pmt.invoiceId);
+    return `
+      <button class="p2-list-item ${p2SelectedPayment === pmt.id ? 'selected' : ''}" onclick="p2ShowReceipt('${pmt.id}')">
+        <div class="p2-list-item-primary">$${pmt.amount.toFixed(2)} Received</div>
+        <div class="p2-list-item-secondary">${invoice?.customerName || 'Unknown'}</div>
+        <div class="p2-list-item-secondary">${new Date(pmt.createdAt).toLocaleDateString()}</div>
+      </button>
+    `;
+  }).join('');
+}
+
+function p2ShowReceipt(paymentId) {
+  p2SelectedPayment = paymentId;
+  const payment = p2Payments.find(p => p.id === paymentId);
+  const receipt = p2Receipts.find(r => r.paymentId === paymentId);
+  const invoice = p2Invoices.find(i => i.id === payment.invoiceId);
+  
+  if (!receipt) return;
+  
+  const detailDiv = document.getElementById('p2-receipt-detail');
+  
+  const methodIcon = {
+    'Online Card': '💳',
+    'Physical Card': '💳',
+    'Cash': '💰',
+    'Venmo': '📱'
+  };
+  
+  const methodDisplay = methodIcon[receipt.paymentMethod] || '💳';
+  
+  detailDiv.innerHTML = `
+    <div class="p2-receipt-display">
+      <div class="p2-receipt-icon">✓</div>
+      <div class="p2-receipt-title">Payment Received</div>
+      <div class="p2-receipt-number">Receipt #${receipt.id}</div>
+      
+      <div class="p2-receipt-section">
+        <div class="p2-receipt-amount">$${receipt.amountPaid.toFixed(2)}</div>
+        <div class="p2-receipt-service">${receipt.serviceIcon} ${receipt.serviceName}</div>
+        <div class="p2-receipt-date">${new Date(receipt.createdAt).toLocaleDateString()}</div>
+        <div style="font-size:11px;color:#5A7A5A;margin-top:8px">Paid via: ${methodDisplay} ${receipt.paymentMethod}</div>
+      </div>
+      
+      <div class="p2-receipt-review">
+        <div class="p2-receipt-review-title">⭐ Share Your Experience</div>
+        <p style="font-size:11px;color:#1A2B1A;margin-bottom:8px">Your honest review helps us serve better!</p>
+        <a href="https://www.google.com/search?q=arbol+de+fuego+services" target="_blank" class="p2-receipt-review-link">Leave a Google Review</a>
+      </div>
+      
+      <div class="p2-delivery-status">
+        <div style="text-align:center">
+          <div class="p2-delivery-icon ${receipt.delivery.email.sent ? 'sent' : 'unsent'}">✓</div>
+          <div style="font-size:10px;margin-top:4px">Email</div>
+        </div>
+        <div style="text-align:center">
+          <div class="p2-delivery-icon ${receipt.delivery.sms.sent ? 'sent' : 'unsent'}">✓</div>
+          <div style="font-size:10px;margin-top:4px">SMS</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  p2RenderPayments();
+}
+
+function p2RenderCalendar() {
+  const calDiv = document.getElementById('phase2-calendar');
+  if (!calDiv) return;
+  
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
+  let html = '';
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  dayNames.forEach(d => {
+    html += `<div style="font-size:10px;font-weight:700;color:#8AAA8A;text-align:center;padding:4px">${d}</div>`;
+  });
+  
+  for (let i = 0; i < firstDay; i++) {
+    html += '<div style="padding:4px"></div>';
+  }
+  
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    const dayBookings = bookings.filter(b => b.date === dateStr);
+    const hasBooking = dayBookings.length > 0;
+    
+    html += `
+      <div style="padding:4px;border-radius:6px;background:${hasBooking ? 'rgba(42,122,42,0.2)' : '#1A2B1A'};border:1px solid #2A5A2A;text-align:center;font-size:11px;color:#E2E8F0;font-weight:600;cursor:pointer" title="${hasBooking ? dayBookings.length + ' booking(s)' : 'No bookings'}">
+        ${d}${hasBooking ? '<div style="font-size:8px;color:#A5D6A7">●</div>' : ''}
+      </div>
+    `;
+  }
+  
+  calDiv.innerHTML = html;
+}
+
+function p2LoadFromStorage() {
+  const invs = localStorage.getItem('p2_invoices');
+  const pmts = localStorage.getItem('p2_payments');
+  const recs = localStorage.getItem('p2_receipts');
+  
+  if (invs) p2Invoices = JSON.parse(invs);
+  if (pmts) p2Payments = JSON.parse(pmts);
+  if (recs) p2Receipts = JSON.parse(recs);
+}
+
+// Load on startup
+p2LoadFromStorage();
+console.log('✅ Phase 2 system initialized');
+</script>
+</body>
+</html>
