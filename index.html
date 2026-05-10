@@ -969,16 +969,18 @@ function toggleTodayCard() {
 }
 
 function renderTodayCard() {
+  try {
   const today = getTodayStr();
   const todayDate = new Date();
   const dateLabel = todayDate.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
   document.getElementById('today-card-date').textContent = dateLabel;
 
   const todayJobs = bookings
-    .filter(b => b.date === today)
-    .sort((a, b) => parseTime(a.time) - parseTime(b.time));
+    .filter(bk => bk.date === today)
+    .sort((x, y) => parseTime(x.time) - parseTime(y.time));
 
   const body = document.getElementById('today-card-body');
+  if (!body) return;
   body.style.display = todayCardOpen ? 'block' : 'none';
 
   if (todayJobs.length === 0) {
@@ -994,12 +996,12 @@ function renderTodayCard() {
   // Build route: Home → job1 → job2 → ... → Home
   const stops = [
     HOME,
-    ...todayJobs.map(b => ({
-      lat: (CITY_COORDS[b.city] || CITY_COORDS['Aurora']).lat,
-      lng: (CITY_COORDS[b.city] || CITY_COORDS['Aurora']).lng,
-      label: `${b.time} — ${b.fname} ${b.lname}`,
-      sub: `${b.service} · ${b.city}`,
-      status: b.status
+    ...todayJobs.map(bk => ({
+      lat: (CITY_COORDS[bk.city] || CITY_COORDS['Aurora']).lat,
+      lng: (CITY_COORDS[bk.city] || CITY_COORDS['Aurora']).lng,
+      label: `${bk.time} — ${bk.fname} ${bk.lname}`,
+      sub: `${bk.service} · ${bk.city}`,
+      status: bk.status
     })),
     HOME
   ];
@@ -1052,6 +1054,11 @@ function renderTodayCard() {
       </div>
     </div>
     <div class="today-route">${routeHTML}</div>`;
+  } catch(err) {
+    const body = document.getElementById('today-card-body');
+    if (body) body.innerHTML = `<div style="padding:14px;color:#F5A623;font-size:12px">⚠️ Error loading today's summary: ${err.message}</div>`;
+    console.error('renderTodayCard error:', err);
+  }
 }
 
 function loadBookings(){bookings=[];for(let k in localStorage){if(k.startsWith('ADF-')){const b=JSON.parse(localStorage[k]);if(!b.ricardoNotes)b.ricardoNotes='';bookings.push(b);}}console.log('Loaded bookings from storage:', bookings);adminRender();}
