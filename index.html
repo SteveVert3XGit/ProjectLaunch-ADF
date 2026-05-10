@@ -1014,15 +1014,24 @@ function renderTodayCard() {
     const pending   = todayJobs.filter(bk => bk.status==='pending').length;
     const completed = todayJobs.filter(bk => bk.status==='completed').length;
 
+    // Case-insensitive city coordinate lookup
+    const getCityCoords = city => {
+      if (!city) return CITY_COORDS['Aurora'];
+      const key = Object.keys(CITY_COORDS).find(k => k.toLowerCase() === city.toLowerCase().trim());
+      return key ? CITY_COORDS[key] : null;
+    };
+
     const stops = [
       { ...HOME, label:'Home', sub:'1954 Macon St, Aurora', isHome:true },
-      ...todayJobs.map(bk => ({
-        lat: (CITY_COORDS[bk.city]||CITY_COORDS['Aurora']).lat,
-        lng: (CITY_COORDS[bk.city]||CITY_COORDS['Aurora']).lng,
-        label: `${bk.time} — ${bk.fname} ${bk.lname}`,
-        sub: `${bk.service} · ${bk.city}`,
-        status: bk.status, isHome: false
-      })),
+      ...todayJobs.map(bk => {
+        const coords = getCityCoords(bk.city) || CITY_COORDS['Centennial'];
+        return {
+          lat: coords.lat, lng: coords.lng,
+          label: `${bk.time} — ${bk.fname} ${bk.lname}`,
+          sub: `${bk.service} · ${bk.city}`,
+          status: bk.status, isHome: false
+        };
+      }),
       { ...HOME, label:'Home', sub:'1954 Macon St, Aurora', isHome:true }
     ];
 
