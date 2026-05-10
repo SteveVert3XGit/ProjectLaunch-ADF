@@ -490,10 +490,14 @@
 
     <!-- TODAY SUMMARY CARD -->
     <div id="today-card" style="background:#0F1B0F;border:1px solid #2A7A2A;border-radius:10px;overflow:hidden;margin-bottom:10px">
-      <button onclick="toggleTodayCard()" style="width:100%;background:none;border:none;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit">
-        <span style="font-size:14px;font-weight:700;color:#E2E8F0">📅 <span id="today-card-date">Today</span></span>
-        <span id="today-card-toggle" style="font-size:14px;color:#A5D6A7">▼</span>
-      </button>
+      <div style="display:flex;align-items:center;padding:10px 14px;gap:8px">
+        <button onclick="shiftCardDate(-1)" style="background:none;border:1px solid #2A5A2A;border-radius:6px;color:#A5D6A7;cursor:pointer;font-size:16px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit">‹</button>
+        <button onclick="toggleTodayCard()" style="flex:1;background:none;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
+          <span style="font-size:13px;font-weight:700;color:#E2E8F0">📅 <span id="today-card-date">Today</span></span>
+          <span id="today-card-toggle" style="font-size:12px;color:#A5D6A7">▼</span>
+        </button>
+        <button onclick="shiftCardDate(1)" style="background:none;border:1px solid #2A5A2A;border-radius:6px;color:#A5D6A7;cursor:pointer;font-size:16px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit">›</button>
+      </div>
       <div id="today-card-body" style="padding:0 14px 14px;border-top:1px solid #1A2B1A">
         <div style="color:#4A6A4A;font-size:12px;padding:10px 0">Loading...</div>
       </div>
@@ -963,6 +967,7 @@ function parseTime(timeStr) {
 }
 
 let todayCardOpen = true;
+let selectedCardDate = new Date(); selectedCardDate.setHours(0,0,0,0);
 
 function toggleTodayCard() {
   todayCardOpen = !todayCardOpen;
@@ -970,10 +975,25 @@ function toggleTodayCard() {
   document.getElementById('today-card-toggle').textContent = todayCardOpen ? '▼' : '▶';
 }
 
+function shiftCardDate(dir) {
+  selectedCardDate = new Date(selectedCardDate);
+  selectedCardDate.setDate(selectedCardDate.getDate() + dir);
+  renderTodayCard();
+}
+
 function renderTodayCard() {
   try {
-    const today = getTodayStr();
-    const dateLabel = new Date().toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+    const todayStr = getTodayStr();
+    const y = selectedCardDate.getFullYear();
+    const m = String(selectedCardDate.getMonth()+1).padStart(2,'0');
+    const d = String(selectedCardDate.getDate()).padStart(2,'0');
+    const selectedStr = `${y}-${m}-${d}`;
+
+    const isToday = selectedStr === todayStr;
+    const dateLabel = isToday
+      ? `Today · ${selectedCardDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})}`
+      : selectedCardDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+
     const dateEl = document.getElementById('today-card-date');
     if (dateEl) dateEl.textContent = dateLabel;
 
@@ -982,7 +1002,7 @@ function renderTodayCard() {
     body.style.display = todayCardOpen ? 'block' : 'none';
 
     const todayJobs = bookings
-      .filter(bk => bk.date === today)
+      .filter(bk => bk.date === selectedStr)
       .sort((x, y) => parseTime(x.time) - parseTime(y.time));
 
     if (todayJobs.length === 0) {
