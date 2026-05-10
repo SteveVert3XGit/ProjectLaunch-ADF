@@ -489,12 +489,14 @@
     </div>
 
     <!-- TODAY SUMMARY CARD -->
-    <div class="today-card" id="today-card">
-      <button class="today-card-header" onclick="toggleTodayCard()">
-        <div class="today-card-title">📅 <span id="today-card-date">Today</span></div>
-        <span id="today-card-toggle" style="font-size:16px;color:#A5D6A7">▼</span>
+    <div id="today-card" style="background:#0F1B0F;border:1px solid #2A7A2A;border-radius:10px;overflow:hidden;margin-bottom:10px">
+      <button onclick="toggleTodayCard()" style="width:100%;background:none;border:none;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:inherit">
+        <span style="font-size:14px;font-weight:700;color:#E2E8F0">📅 <span id="today-card-date">Today</span></span>
+        <span id="today-card-toggle" style="font-size:14px;color:#A5D6A7">▼</span>
       </button>
-      <div id="today-card-body" class="today-card-body"></div>
+      <div id="today-card-body" style="padding:0 14px 14px;border-top:1px solid #1A2B1A">
+        <div style="color:#4A6A4A;font-size:12px;padding:10px 0">Loading...</div>
+      </div>
     </div>
     
     <!-- Stats Dashboard -->
@@ -970,94 +972,89 @@ function toggleTodayCard() {
 
 function renderTodayCard() {
   try {
-  const today = getTodayStr();
-  const todayDate = new Date();
-  const dateLabel = todayDate.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-  document.getElementById('today-card-date').textContent = dateLabel;
+    const today = getTodayStr();
+    const dateLabel = new Date().toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+    const dateEl = document.getElementById('today-card-date');
+    if (dateEl) dateEl.textContent = dateLabel;
 
-  const todayJobs = bookings
-    .filter(bk => bk.date === today)
-    .sort((x, y) => parseTime(x.time) - parseTime(y.time));
+    const body = document.getElementById('today-card-body');
+    if (!body) return;
+    body.style.display = todayCardOpen ? 'block' : 'none';
 
-  const body = document.getElementById('today-card-body');
-  if (!body) return;
-  body.style.display = todayCardOpen ? 'block' : 'none';
+    const todayJobs = bookings
+      .filter(bk => bk.date === today)
+      .sort((x, y) => parseTime(x.time) - parseTime(y.time));
 
-  if (todayJobs.length === 0) {
-    body.innerHTML = `<div style="padding:14px 0 6px;text-align:center;color:#4A6A4A;font-size:13px;font-style:italic">No jobs scheduled — enjoy your day! 🌿</div>`;
-    return;
-  }
+    if (todayJobs.length === 0) {
+      body.innerHTML = `<div style="text-align:center;color:#4A6A4A;font-size:13px;font-style:italic;padding:10px 0">No jobs scheduled — enjoy your day! 🌿</div>`;
+      return;
+    }
 
-  // Stats
-  const confirmed  = todayJobs.filter(b => b.status === 'confirmed').length;
-  const pending    = todayJobs.filter(b => b.status === 'pending').length;
-  const completed  = todayJobs.filter(b => b.status === 'completed').length;
+    const confirmed = todayJobs.filter(bk => bk.status==='confirmed').length;
+    const pending   = todayJobs.filter(bk => bk.status==='pending').length;
+    const completed = todayJobs.filter(bk => bk.status==='completed').length;
 
-  // Build route: Home → job1 → job2 → ... → Home
-  const stops = [
-    HOME,
-    ...todayJobs.map(bk => ({
-      lat: (CITY_COORDS[bk.city] || CITY_COORDS['Aurora']).lat,
-      lng: (CITY_COORDS[bk.city] || CITY_COORDS['Aurora']).lng,
-      label: `${bk.time} — ${bk.fname} ${bk.lname}`,
-      sub: `${bk.service} · ${bk.city}`,
-      status: bk.status
-    })),
-    HOME
-  ];
+    const stops = [
+      { ...HOME, label:'Home', sub:'1954 Macon St, Aurora', isHome:true },
+      ...todayJobs.map(bk => ({
+        lat: (CITY_COORDS[bk.city]||CITY_COORDS['Aurora']).lat,
+        lng: (CITY_COORDS[bk.city]||CITY_COORDS['Aurora']).lng,
+        label: `${bk.time} — ${bk.fname} ${bk.lname}`,
+        sub: `${bk.service} · ${bk.city}`,
+        status: bk.status, isHome: false
+      })),
+      { ...HOME, label:'Home', sub:'1954 Macon St, Aurora', isHome:true }
+    ];
 
-  // Calculate legs
-  let totalMiles = 0;
-  const legs = [];
-  for (let i = 0; i < stops.length - 1; i++) {
-    const d = haversine(stops[i], stops[i+1]);
-    totalMiles += d;
-    legs.push(d.toFixed(1));
-  }
+    let totalMiles = 0;
+    const legs = [];
+    for (let i = 0; i < stops.length - 1; i++) {
+      const d = haversine(stops[i], stops[i+1]);
+      totalMiles += d;
+      legs.push(d.toFixed(1));
+    }
 
-  // Status dot colors
-  const dotColor = s => s === 'confirmed' ? '#10B981' : s === 'completed' ? '#6B7280' : '#F59E0B';
+    const dotColor = s => s==='confirmed'?'#10B981':s==='completed'?'#6B7280':'#F59E0B';
 
-  // Build route HTML
-  let routeHTML = '';
-  for (let i = 0; i < stops.length; i++) {
-    const s = stops[i];
-    const isHome = i === 0 || i === stops.length - 1;
-    const dot = isHome ? '#A5D6A7' : dotColor(s.status);
-    const isLast = i === stops.length - 1;
-    routeHTML += `
-      <div class="today-route-stop">
-        <div class="today-route-connector">
-          <div class="today-route-dot" style="background:${dot};margin-top:3px"></div>
-          ${!isLast ? '<div class="today-route-line"></div>' : ''}
+    let routeHTML = '';
+    for (let i = 0; i < stops.length; i++) {
+      const s = stops[i];
+      const dot = s.isHome ? '#A5D6A7' : dotColor(s.status);
+      const isLast = i === stops.length - 1;
+      routeHTML += `
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:3px">
+            <div style="width:10px;height:10px;border-radius:50%;background:${dot}"></div>
+            ${!isLast?`<div style="width:2px;min-height:20px;background:#1E3A1E;margin:2px 0"></div>`:''}
+          </div>
+          <div style="flex:1;padding-bottom:${isLast?'0':'8px'}">
+            <div style="font-size:12px;font-weight:700;color:#E2E8F0">${s.isHome?'🏠 ':''}${s.label}</div>
+            <div style="font-size:10px;color:#4A6A4A;margin-top:1px">${s.sub}</div>
+          </div>
         </div>
-        <div class="today-route-info">
-          <div class="today-route-name">${isHome ? '🏠 ' : ''}${s.label}</div>
-          <div class="today-route-sub">${s.sub}</div>
+        ${!isLast?`<div style="font-size:10px;color:#7AAA7A;font-style:italic;margin:0 0 4px 20px">↓ ${legs[i]} mi</div>`:''}`;
+    }
+
+    body.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 14px">
+        <div style="text-align:center;background:#0A1208;border-radius:8px;padding:8px 4px"><div style="font-size:18px;font-weight:800;color:#A5D6A7">${todayJobs.length}</div><div style="font-size:9px;color:#4A6A4A;text-transform:uppercase;font-weight:600;margin-top:2px">Jobs</div></div>
+        <div style="text-align:center;background:#0A1208;border-radius:8px;padding:8px 4px"><div style="font-size:18px;font-weight:800;color:#A5D6A7">${confirmed}</div><div style="font-size:9px;color:#4A6A4A;text-transform:uppercase;font-weight:600;margin-top:2px">Confirmed</div></div>
+        <div style="text-align:center;background:#0A1208;border-radius:8px;padding:8px 4px"><div style="font-size:18px;font-weight:800;color:#A5D6A7">${pending}</div><div style="font-size:9px;color:#4A6A4A;text-transform:uppercase;font-weight:600;margin-top:2px">Pending</div></div>
+        <div style="text-align:center;background:#0A1208;border-radius:8px;padding:8px 4px"><div style="font-size:18px;font-weight:800;color:#A5D6A7">${completed}</div><div style="font-size:9px;color:#4A6A4A;text-transform:uppercase;font-weight:600;margin-top:2px">Done</div></div>
+      </div>
+      <div style="background:#0A1208;border-radius:8px;padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px">🚗</span>
+        <div>
+          <div style="font-size:20px;font-weight:800;color:#F5A623">~${totalMiles.toFixed(1)} miles</div>
+          <div style="font-size:11px;color:#7AAA7A">estimated total drive (straight-line)</div>
         </div>
       </div>
-      ${!isLast ? `<div class="today-route-dist">↓ ${legs[i]} mi</div>` : ''}`;
-  }
+      <div>${routeHTML}</div>`;
 
-  body.innerHTML = `
-    <div class="today-stats-row">
-      <div class="today-stat"><div class="today-stat-val">${todayJobs.length}</div><div class="today-stat-lab">Jobs</div></div>
-      <div class="today-stat"><div class="today-stat-val">${confirmed}</div><div class="today-stat-lab">Confirmed</div></div>
-      <div class="today-stat"><div class="today-stat-val">${pending}</div><div class="today-stat-lab">Pending</div></div>
-      <div class="today-stat"><div class="today-stat-val">${completed}</div><div class="today-stat-lab">Done</div></div>
-    </div>
-    <div class="today-miles-row">
-      <span style="font-size:20px">🚗</span>
-      <div>
-        <div class="today-miles-val">~${totalMiles.toFixed(1)} miles</div>
-        <div class="today-miles-lab">estimated total drive (straight-line)</div>
-      </div>
-    </div>
-    <div class="today-route">${routeHTML}</div>`;
   } catch(err) {
     const body = document.getElementById('today-card-body');
-    if (body) body.innerHTML = `<div style="padding:14px;color:#F5A623;font-size:12px">⚠️ Error loading today's summary: ${err.message}</div>`;
-    console.error('renderTodayCard error:', err);
+    if (body) body.innerHTML = `<div style="padding:10px;color:#F5A623;font-size:12px">⚠️ ${err.message}</div>`;
+    console.error('renderTodayCard:', err);
   }
 }
 
