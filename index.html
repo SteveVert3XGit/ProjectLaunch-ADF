@@ -176,6 +176,27 @@
     
     /* Jobs List */
     .admin-jobs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px}
+    /* Today Summary Card */
+    .today-card{background:#0F1B0F;border:1px solid #1E2D1E;border-radius:10px;overflow:hidden;margin-bottom:10px}
+    .today-card-header{width:100%;background:0;border:0;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;text-align:left;font-family:inherit}
+    .today-card-title{font-size:14px;font-weight:700;color:#E2E8F0;display:flex;align-items:center;gap:8px}
+    .today-card-body{padding:0 14px 14px;border-top:1px solid #1A2B1A}
+    .today-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 14px}
+    .today-stat{text-align:center;background:#0A1208;border-radius:8px;padding:8px 4px}
+    .today-stat-val{font-size:18px;font-weight:800;color:#A5D6A7}
+    .today-stat-lab{font-size:9px;color:#4A6A4A;text-transform:uppercase;font-weight:600;margin-top:2px}
+    .today-miles-row{background:#0A1208;border-radius:8px;padding:10px 12px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .today-miles-val{font-size:20px;font-weight:800;color:#F5A623}
+    .today-miles-lab{font-size:11px;color:#7AAA7A}
+    .today-route{display:flex;flex-direction:column}
+    .today-route-stop{display:flex;align-items:flex-start;gap:10px}
+    .today-route-connector{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+    .today-route-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .today-route-line{width:2px;background:#1E3A1E;flex:1;min-height:20px;margin:2px 0}
+    .today-route-info{flex:1;padding-bottom:12px}
+    .today-route-name{font-size:12px;font-weight:700;color:#E2E8F0}
+    .today-route-sub{font-size:10px;color:#4A6A4A;margin-top:1px}
+    .today-route-dist{font-size:10px;color:#7AAA7A;font-weight:600;margin:4px 0 0 20px;font-style:italic}
     .admin-toggle-completed{background:#161D27;border:1px solid #1E2D3E;color:#8AAA8A;border-radius:6px;padding:6px 10px;font-size:10px;font-weight:700;cursor:pointer;min-height:40px;white-space:nowrap}
     .admin-toggle-completed.show{background:#1A3A1A;border-color:#2A5A2A;color:#A5D6A7}
     .admin-list{background:#0F1B0F;border:1px solid #1E2D1E;border-radius:10px;overflow:hidden;flex:1;display:flex;flex-direction:column;min-height:200px}
@@ -465,7 +486,15 @@
   <div id="bookings-tab" class="admin-tab-content active" style="flex-direction:column">
   <div class="admin-main">
     <div style="display:flex;align-items:center;justify-content:space-between;position:relative;margin-bottom:10px">
+    </div>
 
+    <!-- TODAY SUMMARY CARD -->
+    <div class="today-card" id="today-card">
+      <button class="today-card-header" onclick="toggleTodayCard()">
+        <div class="today-card-title">📅 <span id="today-card-date">Today</span></div>
+        <span id="today-card-toggle" style="font-size:16px;color:#A5D6A7">▼</span>
+      </button>
+      <div id="today-card-body" class="today-card-body"></div>
     </div>
     
     <!-- Stats Dashboard -->
@@ -896,9 +925,139 @@ function sendInvoice(method){const id=document.getElementById('invoice-booking-i
 function closeInvoice(){document.getElementById('invoice-modal').classList.remove('show');}
 function getPeriodDates(){const today=new Date();today.setHours(0,0,0,0);const start=new Date(today);const end=new Date(today);if(adminPeriod==='week'){const dayOfWeek=today.getDay();const diff=today.getDate()-dayOfWeek+(dayOfWeek===0?-6:1);start.setDate(diff);end.setDate(start.getDate()+6);}else{start.setDate(1);end.setMonth(end.getMonth()+1);end.setDate(0);}end.setHours(23,59,59,999);return{start,end};}
 
+// ── TODAY SUMMARY ───────────────────────────────────────
+const HOME = { lat: 39.7294, lng: -104.8319, label: 'Home', sub: '1954 Macon St, Aurora' };
+const CITY_COORDS = {
+  'Aurora':            { lat: 39.7294, lng: -104.8319 },
+  'Centennial':        { lat: 39.5786, lng: -104.8772 },
+  'Parker':            { lat: 39.5186, lng: -104.7613 },
+  'Englewood':         { lat: 39.6483, lng: -104.9877 },
+  'Greenwood Village': { lat: 39.6133, lng: -104.9042 },
+  'Littleton':         { lat: 39.6133, lng: -105.0166 },
+  'Highlands Ranch':   { lat: 39.5494, lng: -104.9691 },
+  'Lone Tree':         { lat: 39.5286, lng: -104.8727 }
+};
+
+function haversine(a, b) {
+  const R = 3958.8; // miles
+  const dLat = (b.lat - a.lat) * Math.PI / 180;
+  const dLng = (b.lng - a.lng) * Math.PI / 180;
+  const x = Math.sin(dLat/2)**2 + Math.cos(a.lat*Math.PI/180) * Math.cos(b.lat*Math.PI/180) * Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1-x));
+}
+
+function getTodayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function parseTime(timeStr) {
+  if (!timeStr) return 0;
+  const [time, ampm] = timeStr.split(' ');
+  let [h, m] = time.split(':').map(Number);
+  if (ampm === 'PM' && h !== 12) h += 12;
+  if (ampm === 'AM' && h === 12) h = 0;
+  return h * 60 + m;
+}
+
+let todayCardOpen = true;
+
+function toggleTodayCard() {
+  todayCardOpen = !todayCardOpen;
+  document.getElementById('today-card-body').style.display = todayCardOpen ? 'block' : 'none';
+  document.getElementById('today-card-toggle').textContent = todayCardOpen ? '▼' : '▶';
+}
+
+function renderTodayCard() {
+  const today = getTodayStr();
+  const todayDate = new Date();
+  const dateLabel = todayDate.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  document.getElementById('today-card-date').textContent = dateLabel;
+
+  const todayJobs = bookings
+    .filter(b => b.date === today)
+    .sort((a, b) => parseTime(a.time) - parseTime(b.time));
+
+  const body = document.getElementById('today-card-body');
+  body.style.display = todayCardOpen ? 'block' : 'none';
+
+  if (todayJobs.length === 0) {
+    body.innerHTML = `<div style="padding:14px 0 6px;text-align:center;color:#4A6A4A;font-size:13px;font-style:italic">No jobs scheduled — enjoy your day! 🌿</div>`;
+    return;
+  }
+
+  // Stats
+  const confirmed  = todayJobs.filter(b => b.status === 'confirmed').length;
+  const pending    = todayJobs.filter(b => b.status === 'pending').length;
+  const completed  = todayJobs.filter(b => b.status === 'completed').length;
+
+  // Build route: Home → job1 → job2 → ... → Home
+  const stops = [
+    HOME,
+    ...todayJobs.map(b => ({
+      lat: (CITY_COORDS[b.city] || CITY_COORDS['Aurora']).lat,
+      lng: (CITY_COORDS[b.city] || CITY_COORDS['Aurora']).lng,
+      label: `${b.time} — ${b.fname} ${b.lname}`,
+      sub: `${b.service} · ${b.city}`,
+      status: b.status
+    })),
+    HOME
+  ];
+
+  // Calculate legs
+  let totalMiles = 0;
+  const legs = [];
+  for (let i = 0; i < stops.length - 1; i++) {
+    const d = haversine(stops[i], stops[i+1]);
+    totalMiles += d;
+    legs.push(d.toFixed(1));
+  }
+
+  // Status dot colors
+  const dotColor = s => s === 'confirmed' ? '#10B981' : s === 'completed' ? '#6B7280' : '#F59E0B';
+
+  // Build route HTML
+  let routeHTML = '';
+  for (let i = 0; i < stops.length; i++) {
+    const s = stops[i];
+    const isHome = i === 0 || i === stops.length - 1;
+    const dot = isHome ? '#A5D6A7' : dotColor(s.status);
+    const isLast = i === stops.length - 1;
+    routeHTML += `
+      <div class="today-route-stop">
+        <div class="today-route-connector">
+          <div class="today-route-dot" style="background:${dot};margin-top:3px"></div>
+          ${!isLast ? '<div class="today-route-line"></div>' : ''}
+        </div>
+        <div class="today-route-info">
+          <div class="today-route-name">${isHome ? '🏠 ' : ''}${s.label}</div>
+          <div class="today-route-sub">${s.sub}</div>
+        </div>
+      </div>
+      ${!isLast ? `<div class="today-route-dist">↓ ${legs[i]} mi</div>` : ''}`;
+  }
+
+  body.innerHTML = `
+    <div class="today-stats-row">
+      <div class="today-stat"><div class="today-stat-val">${todayJobs.length}</div><div class="today-stat-lab">Jobs</div></div>
+      <div class="today-stat"><div class="today-stat-val">${confirmed}</div><div class="today-stat-lab">Confirmed</div></div>
+      <div class="today-stat"><div class="today-stat-val">${pending}</div><div class="today-stat-lab">Pending</div></div>
+      <div class="today-stat"><div class="today-stat-val">${completed}</div><div class="today-stat-lab">Done</div></div>
+    </div>
+    <div class="today-miles-row">
+      <span style="font-size:20px">🚗</span>
+      <div>
+        <div class="today-miles-val">~${totalMiles.toFixed(1)} miles</div>
+        <div class="today-miles-lab">estimated total drive (straight-line)</div>
+      </div>
+    </div>
+    <div class="today-route">${routeHTML}</div>`;
+}
+
 function loadBookings(){bookings=[];for(let k in localStorage){if(k.startsWith('ADF-')){const b=JSON.parse(localStorage[k]);if(!b.ricardoNotes)b.ricardoNotes='';bookings.push(b);}}console.log('Loaded bookings from storage:', bookings);adminRender();}
 
 function adminRender(){
+  renderTodayCard();
   console.log('adminRender called, bookings:', bookings, 'period:', adminPeriod);
   const {start,end}=getPeriodDates();
   console.log('Period dates:', start, end);
