@@ -933,16 +933,26 @@ function getPeriodDates(){const today=new Date();today.setHours(0,0,0,0);const s
 
 // ── TODAY SUMMARY ───────────────────────────────────────
 const HOME = { lat: 39.7294, lng: -104.8319, label: 'Home', sub: '1954 Macon St, Aurora' };
-const CITY_COORDS = {
-  'Aurora':            { lat: 39.7294, lng: -104.8319 },
-  'Centennial':        { lat: 39.5786, lng: -104.8772 },
-  'Parker':            { lat: 39.5186, lng: -104.7613 },
-  'Englewood':         { lat: 39.6483, lng: -104.9877 },
-  'Greenwood Village': { lat: 39.6133, lng: -104.9042 },
-  'Littleton':         { lat: 39.6133, lng: -105.0166 },
-  'Highlands Ranch':   { lat: 39.5494, lng: -104.9691 },
-  'Lone Tree':         { lat: 39.5286, lng: -104.8727 }
+
+// ZIP prefix → approximate lat/lng for Denver Metro area
+const ZIP_COORDS = {
+  '800': { lat: 39.7392, lng: -104.9903 }, // Denver
+  '801': { lat: 39.7392, lng: -104.9903 }, // Denver
+  '802': { lat: 39.7294, lng: -104.8319 }, // Aurora
+  '803': { lat: 39.5786, lng: -104.8772 }, // Centennial/Englewood
+  '804': { lat: 39.6133, lng: -105.0166 }, // Littleton
+  '805': { lat: 39.5186, lng: -104.7613 }, // Parker
+  '806': { lat: 39.6483, lng: -104.9877 }, // Englewood
+  '807': { lat: 39.8561, lng: -104.8722 }, // Brighton/Commerce City
+  '808': { lat: 39.9772, lng: -105.1019 }, // Westminster/Broomfield
+  '809': { lat: 39.9936, lng: -105.0897 }, // Broomfield
 };
+
+function getCoordsFromZip(zip) {
+  if (!zip) return null;
+  const prefix = String(zip).trim().substring(0, 3);
+  return ZIP_COORDS[prefix] || null;
+}
 
 function haversine(a, b) {
   const R = 3958.8; // miles
@@ -1014,21 +1024,14 @@ function renderTodayCard() {
     const pending   = todayJobs.filter(bk => bk.status==='pending').length;
     const completed = todayJobs.filter(bk => bk.status==='completed').length;
 
-    // Case-insensitive city coordinate lookup
-    const getCityCoords = city => {
-      if (!city) return CITY_COORDS['Aurora'];
-      const key = Object.keys(CITY_COORDS).find(k => k.toLowerCase() === city.toLowerCase().trim());
-      return key ? CITY_COORDS[key] : null;
-    };
-
     const stops = [
       { ...HOME, label:'Home', sub:'1954 Macon St, Aurora', isHome:true },
       ...todayJobs.map(bk => {
-        const coords = getCityCoords(bk.city) || CITY_COORDS['Centennial'];
+        const coords = getCoordsFromZip(bk.zip) || HOME;
         return {
           lat: coords.lat, lng: coords.lng,
           label: `${bk.time} — ${bk.fname} ${bk.lname}`,
-          sub: `${bk.service} · ${bk.city}`,
+          sub: `${bk.service} · ${bk.address}, ${bk.city}`,
           status: bk.status, isHome: false
         };
       }),
